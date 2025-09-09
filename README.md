@@ -41,6 +41,7 @@ Target Users
 5. Government departments
 
 Project Structure
+
 ├── frontend/         # HTML, CSS, JS files  
 ├── backend/          # Flask server and routes  
 ├── database/         # SQLite DB schema and migrations  
