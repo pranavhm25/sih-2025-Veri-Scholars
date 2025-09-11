@@ -52,12 +52,12 @@ Project Structure
 └── README.md         # Documentation  
 
 Team Members
-1. Akash Biswas
-2. Arav Gupta
+1. Akash Biswas - Backend and AI/ML model development
+2. Arav Gupta - Backend and AI/ML model development
 3. H M Pranav - UI/UX
-4. Dhritiraaj Bharali - PPT
+4. Dhritiraaj Bharali -Security
 5. Aditi Agarwal - Web Design
-6. Hrishikesh Shetty -
+6. Hrishikesh Shetty - App Dev(Front End)
 
 Future Scope
 1. Blockchain-based certificate storage.
