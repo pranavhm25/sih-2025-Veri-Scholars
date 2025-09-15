@@ -54,10 +54,10 @@ Project Structure
 Team Members
 1. Akash Biswas - Backend and AI/ML model development
 2. Arav Gupta - Backend and AI/ML model development
-3. H M Pranav - UI/UX
-4. Dhritiraaj Bharali -Security
+3. H M Pranav - Frontend 
+4. Dhritiraaj Bharali - Security & Data Protection
 5. Aditi Agarwal - Web Design
-6. Hrishikesh Shetty - App Dev(Front End)
+6. Hrishikesh Shetty - App Dev (Front End)
 
 Future Scope
 1. Blockchain-based certificate storage.
