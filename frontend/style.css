@@ -321,3 +321,20 @@ body.dark-mode footer {
   .feature{min-width:100%}
   .login-card{width:100%}
 }
+
+.create-btn {
+  background: transparent;
+  color: var(--accent-2);
+  border: none;
+  display: block;
+  margin: 12px auto 0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.25s;
+}
+
+.create-btn:hover {
+  color: var(--accent);
+}
