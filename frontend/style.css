@@ -338,3 +338,8 @@ body.dark-mode footer {
 .create-btn:hover {
   color: var(--accent);
 }
+
+body.dark-mode .headline,
+body.dark-mode .feature h3 {
+  color: #ffffff !important;
+}
