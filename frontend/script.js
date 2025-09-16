@@ -1,35 +1,40 @@
-$(function () {
+(function () {
+
+  function showSection(id) {
+    $('section').hide();
+    $(id).fadeIn();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   $('[data-target]').on('click', function () {
     const t = $(this).data('target');
-    $('section').hide();
-    $(t).show();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showSection(t);
   });
-  $('#darkToggle').on('click', function () {
-    $('body').toggleClass('dark-mode');
-    $(this).text($('body').hasClass('dark-mode') ? '☀️' : '🌙');
-  });
+
   $('.nav-link').on('click', function (e) {
     e.preventDefault();
     const href = $(this).attr('href');
-    if (href === '#home') { $('section').hide(); $('#home').show(); }
-    if (href === '#verify') { $('section').hide(); $('#verify').show(); }
-    if (href === '#dashboard') { $('section').hide(); $('#loginSection').show(); }
+
+    if (href === '#home') showSection('#home');
+    if (href === '#verify') showSection('#verify');
+    if (href === '#dashboard') showSection('#loginSection');
+
     $('.nav-link').removeClass('active');
     $(this).addClass('active');
   });
+
   $("nav.links a, .large-btn").on("click", function (e) {
     const target = $(this).attr("data-target") || $(this).attr("href");
     if (target && target.startsWith("#")) {
       e.preventDefault();
-      $("html, body").animate(
-        { scrollTop: $(target).offset().top - 60 },
-        600
-      );
+      $("html, body").animate({
+        scrollTop: $(target).offset().top - 60
+      }, 600);
       $("nav.links a").removeClass("active");
-      $(`nav.links a[href='${target}']`).addClass("active");
+      $("nav.links a[href='" + target + "']").addClass("active");
     }
   });
+
   $('.openInstitution').on('click', function () {
     $('section').hide();
     if (!sessionStorage.getItem('loggedIn')) {
@@ -39,32 +44,45 @@ $(function () {
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+
   $('#logoutBtn').on('click', function () {
-  sessionStorage.removeItem('loggedIn');
-    $('section').hide();
-    $('#home').show();
+    sessionStorage.removeItem('loggedIn');
+    showSection('#home');
   });
+
   $('#openSign').on('click', function () {
-    $('section').hide();
-    $('#loginSection').show();
+    showSection('#loginSection');
     $('html,body').scrollTop(0);
   });
-  sessionStorage.setItem('loggedIn', true);
+
+  $('#darkToggle').on('click', function () {
+    $('body').toggleClass('dark-mode');
+    $(this).text($('body').hasClass('dark-mode') ? '☀️' : '🌙');
+  });
+
   const uploader = $('#uploader');
   uploader.on('dragenter dragover', function (e) {
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
     $(this).addClass('dragover');
   });
   uploader.on('dragleave drop', function (e) {
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
     $(this).removeClass('dragover');
   });
   uploader.on('drop', function (e) {
     const files = (e.originalEvent.dataTransfer || {}).files || [];
     handleFiles(files);
   });
-  $('#uploadBtn').on('click', function () { $('#fileInput').click(); });
-  $('#fileInput').on('change', function () { handleFiles(this.files); });
+
+  $('#uploadBtn').on('click', function () {
+    $('#fileInput').click();
+  });
+  $('#fileInput').on('change', function () {
+    handleFiles(this.files);
+  });
+
   const allowedTypes = [
     "application/pdf",
     "image/jpeg",
@@ -79,6 +97,7 @@ $(function () {
     const f = files[0];
     $('#filePreview').text(f.name + ' • ' + Math.round(f.size / 1024) + 'KB');
     $('.uploader .upload-btn').text('Processing...').prop('disabled', true);
+
     if (!allowedTypes.includes(f.type)) {
       alert("Unsupported file type! Please upload PDF, JPG, PNG, or CSV/XLSX.");
       resetUploader();
@@ -89,18 +108,20 @@ $(function () {
       resetUploader();
       return;
     }
+
     if (f.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = e => {
         $('#filePreview').html(
-          `<img src="${e.target.result}" style="max-width:200px;border-radius:8px;margin-top:8px" />`
+          '<img src="' + e.target.result +
+          '" style="max-width:200px;border-radius:8px;margin-top:8px" />'
         );
       };
       reader.readAsDataURL(f);
       resetUploader();
       showResult({ name: 'Sophia Clark', roll: '123456' });
-    }
-    else if (f.type === "application/pdf") {
+
+    } else if (f.type === "application/pdf") {
       f.text().then(text => {
         resetUploader();
         if (!text.includes("EXPECTED_KEYWORD")) {
@@ -112,8 +133,8 @@ $(function () {
         console.error(err);
         resetUploader();
       });
-    }
-    else if (f.type === "text/csv" || f.type.includes("spreadsheet")) {
+
+    } else if (f.type === "text/csv" || f.type.includes("spreadsheet")) {
       const reader = new FileReader();
       reader.onload = e => {
         console.log("CSV content:", e.target.result);
@@ -141,6 +162,7 @@ $(function () {
       showResult({ name: rname || 'Sophia Clark', roll: rid || '123456' });
     }, 1200);
   });
+
   $('#signinBtn').on('click', function () {
     const email = $('#email').val().trim();
     const pass = $('#password').val().trim();
@@ -151,16 +173,49 @@ $(function () {
     $(this).text('Signing in...').prop('disabled', true);
     setTimeout(() => {
       $(this).text('Sign in').prop('disabled', false);
-      $('section').hide(); $('#dashboard').show();
+      sessionStorage.setItem('loggedIn', true);
+      showSection('#dashboard');
       $('html,body').scrollTop(0);
     }, 900);
   });
+
+  $('#openCreate').on('click', function () {
+    $('#loginCard').hide();
+    $('#createAccountCard').show();
+  });
+
+  $('#backToLogin').on('click', function () {
+    $('#createAccountCard').hide();
+    $('#loginCard').show();
+  });
+
+  $('#createAccountBtn').on('click', function () {
+    const instName = $('#instName').val().trim();
+    const instEmail = $('#instEmail').val().trim();
+    const instPass = $('#instPass').val().trim();
+
+    if (!instName || !instEmail || !instPass) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    $(this).text('Creating Account...').prop('disabled', true);
+    setTimeout(() => {
+      alert('Account created successfully!');
+      $(this).text('Create Account').prop('disabled', false);
+
+      $('#instName,#instEmail,#instPass').val('');
+
+      $('#backToLogin').click();
+    }, 1200);
+  });
+
   $('#browseMass').on('click', function () {
     alert('This is a frontend template — wire up real upload logic on the backend.');
   });
+
   $('#downloadReport').on('click', function () {
-    const csv = 'Name,Roll,Year,Course,Status\n' +
-      $('#vName').text() + ',123456,2023,BSc Computer Science,Verified';
+    const csv = 'Name,Roll,Year,Course,Status\n' + $('#vName').text() + ',123456,2023,BSc Computer Science,Verified';
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -173,15 +228,18 @@ $(function () {
   function showResult(data) {
     $('#vName').text(data.name || 'Sophia Clark');
     $('#vRoll').text(data.roll || '123456');
-    $('section').hide();
-    $('#result').show();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showSection('#result');
   }
+
   $(document).on('keydown', function (e) {
-    if (e.key === 'Escape') { $('section').hide(); $('#home').show(); }
+    if (e.key === 'Escape') {
+      showSection('#home');
+    }
   });
+
   $('section').hide();
   $('#home').show();
+
   const els = document.querySelectorAll('.card');
   const obs = new IntersectionObserver(entries => {
     entries.forEach(ent => {
@@ -190,8 +248,4 @@ $(function () {
   }, { threshold: 0.12 });
   els.forEach(e => obs.observe(e));
 
-  function showSection(id) {
-    $("#home, #verify, #loginSection, #dashboard, #result").hide();
-    $(id).fadeIn();
-  }
-});
+})();
