@@ -101,6 +101,14 @@
           <a href="#" style="color:var(--accent)">Forgot your password?</a>
         </div>
         <button class="signin" id="signinBtn">Sign in</button>
+        <button id="openCreate" class="create-btn">Create a New Account</button>
+      </div>
+      <div class="login-card" id="createAccountCard" style="display:none;">
+        <input type="text" id="instName" placeholder="Institution Name">
+        <input type="email" id="instEmail" placeholder="Email Address">
+        <input type="password" id="instPass" placeholder="Create Password">
+        <button id="createAccountBtn" class="signin">Create Account</button>
+        <button id="backToLogin" class="create-btn ghost">Back to Login</button>
       </div>
     </section>
 
@@ -129,7 +137,6 @@
                 <button class="btn" style="margin-top:12px" id="browseMass">Browse Files</button>
               </div>
               <div style="margin-top:12px;color:var(--muted)">Supported formats: .csv, .xlsx &nbsp; • &nbsp; <a href="#">Download sample template</a></div>
-
               <div style="margin-top:20px" class="card">
                 <h4 style="margin:0">Recent Activity</h4>
                 <table style="margin-top:12px">
@@ -173,7 +180,6 @@
             </div>
             <div class="badge">✔ Verified</div>
           </div>
-
           <div style="padding:18px 4px;border-radius:8px;background:rgba(255,255,255,0.06)">
             <div style="display:flex;justify-content:space-between;align-items:center">
               <div>
@@ -189,19 +195,15 @@
                 <div style="font-weight:700;font-size:18px">2023</div>
               </div>
             </div>
-
             <div style="margin-top:18px">
               <div style="font-size:13px;color:rgba(255,255,255,0.85)">Course</div>
               <div style="font-weight:700">Bachelor of Science in Computer Science</div>
             </div>
-
             <div style="margin-top:20px;display:flex;justify-content:flex-end;align-items:center">
               <div style="background:rgba(0,0,0,0.08);padding:10px 16px;border-radius:8px;color:#fff">Status</div>
               <div style="margin-left:12px;background:var(--success);padding:10px 16px;border-radius:999px;color:#fff;font-weight:700">Verified</div>
             </div>
-
           </div>
-
         </div>
       </div>
       <div style="text-align:center;margin-top:18px"><button class="large-btn" id="downloadReport">Download Report</button></div>
