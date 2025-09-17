@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OCR Upload — Demo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="card upload-card">
+      <h1>OCR Upload</h1>
+      <input id="file-input" type="file" accept="image/*">
+      <button id="upload-btn" class="btn">Upload & OCR</button>
+
+      <div id="status-card" class="status-card hidden">
+        <h2 id="status-message"></h2>
+        <div class="extracted-data">
+          <p><strong>Name:</strong> <span id="name">-</span></p>
+          <p><strong>Certificate ID:</strong> <span id="certificate-id">-</span></p>
+          <p><strong>Institution:</strong> <span id="institution">-</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
