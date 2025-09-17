@@ -44,12 +44,12 @@ Project Structure
 
 ├── frontend/         # HTML, CSS, JS files
 ├── backend/          # Flask server and routes
-├── database/         # SQLite DB schema and migrations
-├── static/           # Assets (images, stylesheets, scripts)
-├── templates/        # Jinja2 templates for Flask
-├── app.py            # Main Flask entry point
+│   ├── ocr/          # Image processing and OCR files
+│   └── hash/         # Hashing logic for digital PDFs
+├── database/         # (TO be updated , for now it is in ocr and hash seperately)
 ├── requirements.txt  # Dependencies
 └── README.md         # Documentation
+
 
 Team Members
 1. Akash Biswas - Backend and AI/ML model development
@@ -67,6 +67,7 @@ Future Scope
 
 Scalability
 While initially focused on Jharkhand institutions, the system is designed for pan-India adoption, making it a long-term solution for nationwide academic fraud prevention.
+(It is just a prortotype, the project hasn't been completed)
 
 Getting Started  
 Prerequisites  
