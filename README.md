@@ -42,22 +42,22 @@ Target Users
 
 Project Structure
 
-├── frontend/         # HTML, CSS, JS files  
-├── backend/          # Flask server and routes  
-├── database/         # SQLite DB schema and migrations  
-├── static/           # Assets (images, stylesheets, scripts)  
-├── templates/        # Jinja2 templates for Flask  
-├── app.py            # Main Flask entry point  
-├── requirements.txt  # Dependencies  
-└── README.md         # Documentation  
+├── frontend/         # HTML, CSS, JS files
+├── backend/          # Flask server and routes
+├── database/         # SQLite DB schema and migrations
+├── static/           # Assets (images, stylesheets, scripts)
+├── templates/        # Jinja2 templates for Flask
+├── app.py            # Main Flask entry point
+├── requirements.txt  # Dependencies
+└── README.md         # Documentation
 
 Team Members
 1. Akash Biswas - Backend and AI/ML model development
 2. Arav Gupta - Backend and AI/ML model development
-3. H M Pranav - Frontend 
+3. H M Pranav - FrontEnd 
 4. Dhritiraaj Bharali - Security & Data Protection
-5. Aditi Agarwal - Web Design
-6. Hrishikesh Shetty - App Dev (Front End)
+5. Aditi Agarwal - Web Design (UI/UX)
+6. Hrishikesh Shetty - App Development (Frontend)
 
 Future Scope
 1. Blockchain-based certificate storage.
