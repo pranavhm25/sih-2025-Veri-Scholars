@@ -13,7 +13,7 @@ Tech Stack
 1. Frontend: HTML, CSS, JavaScript, jQuery  
 2. Backend: Python (Flask)  
 3. Database: SQLite  
-4. Other Tools: REST APIs, Bootstrap
+4. Other Tools: REST APIs
 
 Core Features
 1. Upload & Verify: Employers, institutions, and agencies can upload or input certificate details (PDFs, scans, or digital copies).
@@ -55,7 +55,7 @@ Team Members
 1. Akash Biswas - Backend and AI/ML model development
 2. Arav Gupta - Backend and AI/ML model development
 3. H M Pranav - FrontEnd 
-4. Dhritiraaj Bharali - Security & Data Protection
+4. Dhritiiraaj Bharali - Security & Data Protection
 5. Aditi Agarwal - Web Design (UI/UX)
 6. Hrishikesh Shetty - App Development (Frontend)
 
