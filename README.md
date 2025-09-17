@@ -61,8 +61,7 @@ Team Members
 
 Future Scope
 1. Blockchain-based certificate storage.
-2. Integration with DigiLocker / UGC / AICTE databases.
-3. AI-powered fraud detection.
+2. AI-powered fraud detection.
 4. Mobile application for on-the-go verification.
 
 Scalability
@@ -74,6 +73,7 @@ Prerequisites
 - Install [Python 3.x](https://www.python.org/downloads/)  
 - Install Flask:  
   ```bash
+  -(would be updated)
   pip install flask
 
 This project was built as part of Smart India Hackathon 2025, under the problem statement:
