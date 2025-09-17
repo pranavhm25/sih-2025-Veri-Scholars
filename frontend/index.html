@@ -1,218 +1,379 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Authenticity Validator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
- 
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Authenticity Validator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">
-            <img src="" alt="">
+    <header class="main-header">
+        <div class="header-container">
+            <a href="#home" class="brand nav-link">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 16.5C21 16.5 21 18.75 21 21M12 16.5V21M3 16.5V21M3.375 3L12 9L20.625 3M12 16.5L3.375 11.25V8.25L12 3L20.625 8.25V11.25L12 16.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <h1>Authenticity Validator</h1>
+            </a>
+            <nav class="main-nav">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#verify" class="nav-link">Verify Certificate</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle theme"></button>
+                <div id="auth-controls">
+                    <button class="btn btn-primary" data-target="#loginPage">Sign In</button>
+                </div>
+            </div>
         </div>
-        <div>
-          <h1>Authenticity Validator</h1>
-          <div style="font-size:12px;color:var(--muted)">Secure Academic Credential Verification</div>
-        </div>
-      </div>
-      <nav class="links">
-        <a href="#home" class="nav-link">Home</a>
-        <a href="#verify" class="nav-link">Verify Certificate</a>
-        <a href="#dashboard" class="nav-link">Institution</a>
-        <button class="btn" id="openSign">Sign In</button>
-        <button id="darkToggle" class="btn ghost">🌙</button>
-      </nav>
     </header>
 
-    <section id="home" class="hero" style="margin-top:18px">
-      <div class="card fade-in">
-        <h2 class="headline">Securely Verify Academic Credentials</h2>
-        <p class="sub">A trusted platform for students, employers, and academic institutions to validate certificates and manage records efficiently.</p>
-
-        <div class="feature-grid">
-          <div class="feature">
-            <h3>Verify a Certificate</h3>
-            <p>For employers and students. Instantly check the authenticity of an academic certificate.</p>
-            <div style="margin-top:16px"><button class="large-btn" data-target="#verify">Verify Now →</button></div>
-          </div>
-          <div class="feature">
-            <h3>Institution Portal</h3>
-            <p>For universities and colleges. Login to manage records or upload new certificates.</p>
-            <div style="margin-top:16px"><button class="large-btn openInstitution">Login / Upload →</button></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card fade-in" style="height:100%">
-        <h3 style="margin-top:0">Why choose us?</h3>
-        <ul style="color:var(--muted);line-height:1.8">
-          <li>Robust verification backed by institutional records</li>
-          <li>Fast bulk uploads & instant checks</li>
-          <li>Beautiful, accessible dashboards for admins</li>
-        </ul>
-        <div style="margin-top:22px">
-          <button class="btn">Get Started</button>
-          <button class="btn ghost" style="margin-left:12px">Learn more</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="verify" style="margin-top:28px">
-      <div class="card">
-        <h2 style="margin:0 0 8px">Certificate Verification</h2>
-        <p class="sub">Verify the authenticity of academic certificates with ease.</p>
-
-        <div class="verify-wrap">
-          <div class="uploader" id="uploader">
-            <div class="icon">☁️</div>
-            <h3>Drag & Drop Certificate</h3>
-            <p style="color:var(--muted)">or click to browse files — PDF, JPG, PNG up to 5MB</p>
-            <input type="file" id="fileInput" style="display:none" accept="application/pdf,image/*" />
-            <button class="upload-btn" id="uploadBtn">Upload File</button>
-            <div id="filePreview" style="margin-top:12px;color:var(--muted);"></div>
-          </div>
-
-          <div class="manual">
-            <h3>Or Enter Details Manually</h3>
-            <div class="form-row"><label>Certificate ID</label><input id="cid" placeholder="Enter the Unique ID on the Certificate"></div>
-            <div class="form-row"><label>Roll Number</label><input id="rid" placeholder="Enter your Roll No."></div>
-            <div class="form-row"><label>Full Name</label><input id="rname" placeholder="Enter your Name as per Official Records"></div>
-            <button class="check-btn" id="checkBtn">Check Authenticity</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="loginSection" class="login-wrap" style="display:none;margin-top:28px">
-      <div class="login-card fade-in">
-        <div style="text-align:center;margin-bottom:10px"><strong>Authenticity Validator</strong></div>
-        <h2 style="margin-top:6px">Institution Login</h2>
-        <p style="color:var(--muted);margin-bottom:12px">Welcome back, please enter your details.</p>
-        <input id="email" placeholder="Email address" />
-        <input id="password" type="password" placeholder="Password" />
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <label style="color:var(--muted)"><input type="checkbox"/> Remember me</label>
-          <a href="#" style="color:var(--accent)">Forgot your password?</a>
-        </div>
-        <button class="signin" id="signinBtn">Sign in</button>
-        <button id="openCreate" class="create-btn">Create a New Account</button>
-      </div>
-      <div class="login-card" id="createAccountCard" style="display:none;">
-        <input type="text" id="instName" placeholder="Institution Name">
-        <input type="email" id="instEmail" placeholder="Email Address">
-        <input type="password" id="instPass" placeholder="Create Password">
-        <button id="createAccountBtn" class="signin">Create Account</button>
-        <button id="backToLogin" class="create-btn ghost">Back to Login</button>
-      </div>
-    </section>
-
-    <section id="dashboard" style="display:none;margin-top:28px">
-      <div class="layout">
-        <aside class="sidebar">
-          <div style="font-weight:800;margin-bottom:14px">Oxford University</div>
-          <div class="menu">
-            <a href="#" class="active">Upload Records</a>
-            <a href="#">Verification Requests</a>
-            <a href="#">Reports</a>
-            <a href="#">Settings</a>
-          </div>
-          <div style="margin-top:24px;color:var(--muted);font-size:13px">Help & Support</div>
-        </aside>
-
-        <main>
-          <h2>Institution Admin Dashboard</h2>
-          <p class="sub">Welcome back, manage your records and verifications.</p>
-
-          <div style="display:flex;gap:18px;margin-top:18px;align-items:flex-start">
-            <div class="upload-area card" style="flex:2">
-              <h3>Mass Upload Records</h3>
-              <div style="margin-top:12px;border-radius:8px;padding:28px;border:2px dashed rgba(15,23,42,0.06);min-height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;" id="massUpload">
-                <div>Drag & Drop Files Here</div>
-                <button class="btn" style="margin-top:12px" id="browseMass">Browse Files</button>
-              </div>
-              <div style="margin-top:12px;color:var(--muted)">Supported formats: .csv, .xlsx &nbsp; • &nbsp; <a href="#">Download sample template</a></div>
-              <div style="margin-top:20px" class="card">
-                <h4 style="margin:0">Recent Activity</h4>
-                <table style="margin-top:12px">
-                  <thead><tr><th>File Name</th><th>Date Uploaded</th><th>Records</th><th>Status</th></tr></thead>
-                  <tbody id="recentTbl">
-                    <tr><td></td><td></td><td></td><td></td></tr> <!--style="color:var(--success)" for success-->
-                    <tr><td></td><td></td><td></td><td></td></tr>
-                    <tr><td></td><td></td><td></td><td></td></tr><!-- style="color:#0ea5e9" for in progress-->
-                    <tr><td></td><td></td><td></td><td></td></tr><!--style="color:var(--danger)" for failure/forged-->
-                  </tbody>
-                </table>
-              </div>
+    <main class="content-container">
+        <section id="home">
+            <div class="hero-content anim-fade-in">
+                <h2 class="headline">Securely Verify Academic Credentials</h2>
+                <p class="sub-headline">A trusted platform for students, employers, and academic institutions to validate certificates and manage records efficiently.</p>
             </div>
+            <div class="feature-cards-container">
+                <div class="feature-card anim-fade-in-up" style="--delay: 0.2s;">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <h3>Verify a Certificate</h3>
+                    <p>For employers and students. Instantly check the authenticity of an academic certificate.</p>
+                    <button class="btn btn-primary" data-target="#verify">Verify Now &rarr;</button>
+                </div>
+                <div class="feature-card anim-fade-in-up" style="--delay: 0.4s;">
+                    <div class="feature-icon">
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10.3V16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.7M4 10.3L12 6l8 4.3M12 22V6M6 18.2l-4-2.2M18 18.2l4-2.2"></path></svg>
+                    </div>
+                    <h3>Institution Portal</h3>
+                    <p>For universities and colleges. Login to manage records or upload new certificates.</p>
+                    <button class="btn btn-primary" data-target="#loginPage">Login / Upload &rarr;</button>
+                </div>
+            </div>
+        </section>
 
-            <aside style="flex:1;display:flex;flex-direction:column;gap:12px">
-              <div class="stat card">
-                <div style="font-size:13px;color:var(--muted)">Total Records Uploaded:</div>
-                <div style="font-size:28px;font-weight:800"></div>
-              </div>
-              <div class="stat card">
-                <div style="font-size:13px;color:var(--muted)">Recent Verifications:</div>
-                <div style="font-size:22px;font-weight:700;color:var(--accent-2)"></div>
-              </div>
-              <div class="stat card">
-                <div style="font-size:13px;color:var(--muted)">Alerts: Forged Attempts:</div>
-                <div style="font-size:22px;font-weight:700;color:var(--danger)"></div>
-              </div>
-            </aside>
-          </div>
-        </main>
-      </div>
-    </section>
+        <section id="about" style="display: none;">
+            <div class="hero-content anim-fade-in is-visible">
+                <h2 class="headline">Redefining Academic Integrity</h2>
+                <p class="sub-headline">We are committed to providing a secure and seamless bridge between academic institutions and the professional world.</p>
+            </div>
+            <div class="about-content">
+                <div class="value-card anim-fade-in-up" style="--delay: 0.2s;">
+                    <h3>Our Mission</h3>
+                    <p>To eliminate academic fraud and streamline the credential verification process for everyone, from recent graduates to global corporations, ensuring trust and integrity in every certificate.</p>
+                </div>
+                <div class="value-card anim-fade-in-up" style="--delay: 0.4s;">
+                    <h3>Our Vision</h3>
+                    <p>To be the universally trusted standard for academic credential validation, empowering individuals with verifiable achievements and providing organizations with confident hiring decisions.</p>
+                </div>
+            </div>
+            <div class="core-values">
+                <div class="value-item anim-fade-in-up" style="--delay: 0.6s;">
+                    <span>🛡️</span>
+                    <h4>Security First</h4>
+                    <p>Employing state-of-the-art encryption and security protocols to protect sensitive academic data.</p>
+                </div>
+                <div class="value-item anim-fade-in-up" style="--delay: 0.8s;">
+                    <span>⚡</span>
+                    <h4>Seamless Efficiency</h4>
+                    <p>An intuitive platform designed for rapid verification, bulk uploads, and effortless record management.</p>
+                </div>
+                <div class="value-item anim-fade-in-up" style="--delay: 1.0s;">
+                    <span>🤝</span>
+                    <h4>Absolute Integrity</h4>
+                    <p>Ensuring every verification is backed by immutable, institution-verified records you can trust.</p>
+                </div>
+            </div>
+        </section>
 
-    <section id="result" style="display:none;margin-top:28px">
-      <div class="result-wrap">
-        <div class="result-card fade-in">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <div>
-              <div style="font-size:20px;font-weight:800">Certificate of Authenticity</div>
-              <div style="color:rgba(255,255,255,0.85)">This certificate has been successfully verified.</div>
+        <section id="verify" style="display: none;">
+            <div class="hero-content">
+                <h2 class="headline">Certificate Verification</h2>
+                <p class="sub-headline">Verify the authenticity of academic certificates with ease.</p>
             </div>
-            <div class="badge">✔ Verified</div>
-          </div>
-          <div style="padding:18px 4px;border-radius:8px;background:rgba(255,255,255,0.06)">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-size:13px;color:rgba(255,255,255,0.85)">Name</div>
-                <div style="font-weight:700;font-size:18px"><span id="vName">Sophia Clark</span></div>
-              </div>
-              <div style="text-align:right">
-                <div style="font-size:13px;color:rgba(255,255,255,0.85)">Roll No</div>
-                <div style="font-weight:700;font-size:18px"><span id="vRoll">123456</span></div>
-              </div>
-              <div style="text-align:right">
-                <div style="font-size:13px;color:rgba(255,255,255,0.85)">Year</div>
-                <div style="font-weight:700;font-size:18px">2023</div>
-              </div>
+            <div class="verify-container">
+                <div class="verify-card uploader-card">
+                    <div class="uploader-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <h3>Drag & Drop Certificate</h3>
+                    <p>or click to browse files — PDF, JPG, PNG up to 10MB</p>
+                    <button class="btn btn-primary" id="uploadBtn">Upload File</button>
+                    <input type="file" id="fileInput" hidden accept="application/pdf,image/jpeg,image/png">
+                    <div class="file-name-display" id="fileNameDisplay"></div>
+                </div>
+                <div class="verify-card manual-card">
+                    <h3>Or Enter Details Manually</h3>
+                    <div class="form-group">
+                        <label for="cid">Certificate ID</label>
+                        <input type="text" id="cid" placeholder="e.g., ABC-123-XYZ">
+                    </div>
+                    <div class="form-group">
+                        <label for="rid">Roll Number</label>
+                        <input type="text" id="rid" placeholder="e.g., CS-2025-042">
+                    </div>
+                    <div class="form-group">
+                        <label for="rname">Full Name</label>
+                        <input type="text" id="rname" placeholder="e.g., Alex Ray">
+                    </div>
+                    <button class="btn btn-dark" id="checkBtn">Check Authenticity</button>
+                </div>
             </div>
-            <div style="margin-top:18px">
-              <div style="font-size:13px;color:rgba(255,255,255,0.85)">Course</div>
-              <div style="font-weight:700">Bachelor of Science in Computer Science</div>
-            </div>
-            <div style="margin-top:20px;display:flex;justify-content:flex-end;align-items:center">
-              <div style="background:rgba(0,0,0,0.08);padding:10px 16px;border-radius:8px;color:#fff">Status</div>
-              <div style="margin-left:12px;background:var(--success);padding:10px 16px;border-radius:999px;color:#fff;font-weight:700">Verified</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:18px"><button class="large-btn" id="downloadReport">Download Report</button></div>
-    </section>
+        </section>
 
-    <footer>
-      Powered by Department of Higher & Technical Education, Jharkhand
+        <section id="contact" style="display: none;">
+            <div class="hero-content">
+                <h2 class="headline">Get In Touch</h2>
+                <p class="sub-headline">Have a question or need support? We're here to help.</p>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <p>Fill out the form and our team will get back to you within 24 hours.</p>
+                    <ul>
+                        <li><span>📞</span> +91 0651 234 5678</li>
+                        <li><span>✉️</span> support@jharkhand.gov.in</li>
+                        <li><span>📍</span> Directorate of Technical Education, Ranchi, Jharkhand, India</li>
+                    </ul>
+                </div>
+                <div class="contact-form-card">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="contact-name">Full Name</label>
+                            <input type="text" id="contact-name" placeholder="Your Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-email">Email Address</label>
+                            <input type="email" id="contact-email" placeholder="you@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-message">Message</label>
+                            <textarea id="contact-message" rows="5" placeholder="Your message here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="loginPage" style="display: none;">
+            <div class="login-container">
+                <div class="login-box">
+                    <div class="brand">
+                        <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21 16.5C21 16.5 21 18.75 21 21M12 16.5V21M3 16.5V21M3.375 3L12 9L20.625 3M12 16.5L3.375 11.25V8.25L12 3L20.625 8.25V11.25L12 16.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <h1>Authenticity Validator</h1>
+                    </div>
+                    <h2>Institution Login</h2>
+                    <p>Welcome back, please enter your details.</p>
+                    <div class="form-group">
+                        <input type="email" id="email" placeholder="Email address">
+                    </div>
+                    <div class="form-group password-group">
+                        <input type="password" id="password" placeholder="Password">
+                        <span class="password-toggle" title="Show/Hide password">👁️</span>
+                    </div>
+                    <div class="login-options">
+                        <label><input type="checkbox"> Remember me</label>
+                        <a href="#">Forgot your password?</a>
+                    </div>
+                    <button class="btn btn-primary" id="signinBtn">Sign In</button>
+                    <p class="form-switcher">Don't have an account? <a href="#" data-target="#registerPage">Sign Up</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="registerPage" style="display: none;">
+            <div class="login-container">
+                <div class="login-box">
+                    <div class="brand">
+                        <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21 16.5C21 16.5 21 18.75 21 21M12 16.5V21M3 16.5V21M3.375 3L12 9L20.625 3M12 16.5L3.375 11.25V8.25L12 3L20.625 8.25V11.25L12 16.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <h1>Authenticity Validator</h1>
+                    </div>
+                    <h2>Create an Account</h2>
+                    <p>Join our network of trusted institutions.</p>
+                    <div class="form-group">
+                        <input type="text" id="instName" placeholder="Institution Name (e.g., MSRIT)" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="instEmail" placeholder="Official Email (e.g. user@gmail.com)" required>
+                    </div>
+                    <div class="form-group password-group">
+                        <input type="password" id="instPass" placeholder="Create Password" required>
+                        <span class="password-toggle" title="Show/Hide password">👁️</span>
+                    </div>
+                    <div class="form-group password-group">
+                        <input type="password" id="instPassConfirm" placeholder="Confirm Password" required>
+                        <span class="password-toggle" title="Show/Hide password">👁️</span>
+                    </div>
+                    <button class="btn btn-primary" id="registerBtn">Create Account</button>
+                    <p class="form-switcher">Already have an account? <a href="#" data-target="#loginPage">Sign In</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" style="display: none;">
+            <div class="dashboard-container">
+                <aside class="dash-sidebar">
+                    <div class="brand">
+                        <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21 16.5C21 16.5 21 18.75 21 21M12 16.5V21M3 16.5V21M3.375 3L12 9L20.625 3M12 16.5L3.375 11.25V8.25L12 3L20.625 8.25V11.25L12 16.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <h1>Authenticity Validator</h1>
+                    </div>
+                    <nav class="dash-nav">
+                        <a href="#dashboard" class="dash-nav-link active" data-target="upload-records-view"><span>📄</span> Upload Records</a>
+                        <a href="#" class="dash-nav-link" data-target="reports-view"><span>📊</span> Reports</a>
+                        <a href="#" class="dash-nav-link" data-target="settings-view"><span>⚙️</span> Settings</a>
+                    </nav>
+                    <div class="sidebar-footer">
+                        <div class="user-profile">
+                            <span>🎓</span>
+                            <div>
+                                <strong id="instNameDisplay"></strong>
+                                <a href="#" id="logoutBtn" class="logout-link">Log Out</a>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                <main class="dash-main">
+                    <div class="dash-view" id="upload-records-view">
+                        <div class="dash-header">
+                            <h2>Institution Admin Dashboard</h2>
+                            <p>Welcome back, manage your records and verifications.</p>
+                        </div>
+                        <div class="dash-content">
+                            <div class="upload-section">
+                                <h3>Mass Upload Records</h3>
+                                <p>Easily upload multiple academic records at once using a CSV or Excel file.</p>
+                                <div class="drop-zone" id="dashboardDropZone">
+                                    <span>☁️</span>
+                                    <p><strong>Drag & Drop Files Here</strong></p>
+                                    <p>or</p>
+                                    <button class="btn btn-secondary" id="dashboardUploadBtn">Browse Files</button>
+                                    <input type="file" id="dashboardFileInput" hidden accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                                </div>
+                                <div class="file-info">
+                                    <span>Supported formats: .csv, .xlsx</span>
+                                    <a href="#">Download sample template</a>
+                                </div>
+                            </div>
+                            <aside class="stats-section">
+                                <h3>Stats & Monitoring</h3>
+                                <div class="stat-card">
+                                    <span>💾</span>
+                                    <div>
+                                        <p>Total Records Uploaded</p>
+                                        <strong id="totalRecords">12,453</strong>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <span>✅</span>
+                                    <div>
+                                        <p>Recent Verifications</p>
+                                        <strong id="recentVerifications">128</strong>
+                                    </div>
+                                </div>
+                                <div class="stat-card alert">
+                                    <span>⚠️</span>
+                                    <div>
+                                        <p>Alerts: Forged Attempts</p>
+                                        <strong id="forgedAttempts">3</strong>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                        <div class="activity-section">
+                            <div class="activity-header">
+                                <h3>Recent Activity</h3>
+                                <a href="#">View All</a>
+                            </div>
+                            <table class="activity-table">
+                                <thead>
+                                    <tr><th>File Name</th><th>Date Uploaded</th><th>Records</th><th>Status</th></tr>
+                                </thead>
+                                <tbody id="recentTbl"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="dash-view" id="reports-view" style="display: none;">
+                        <div class="dash-header"><h2>Reports</h2></div>
+                        <p>This feature is coming soon. You will be able to generate and view reports on verification activity here.</p>
+                    </div>
+
+                    <div class="dash-view" id="settings-view" style="display: none;">
+                        <div class="dash-header"><h2>Settings</h2></div>
+                        <p>This feature is coming soon. You will be able to manage your institution's account settings here.</p>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+        <section id="result" style="display: none;">
+             <div class="hero-content">
+                <h2 class="headline">Verification Result</h2>
+                <p class="sub-headline">The certificate details are displayed below.</p>
+            </div>
+            <div class="result-display">
+                <div class="result-header">
+                    <h4>Certificate of Authenticity</h4>
+                    <p>This certificate has been successfully verified.</p>
+                </div>
+                <div class="result-details">
+                    <div><p>Name</p><strong id="vName"></strong></div>
+                    <div><p>Roll No</p><strong id="vRoll"></strong></div>
+                    <div><p>Institution</p><strong id="vInstitution"></strong></div>
+                    <div><p>Year</p><strong>2025</strong></div>
+                </div>
+                <div class="result-course">
+                    <p>Course</p>
+                    <strong>Bachelor of Engineering in Computer Science</strong>
+                </div>
+                <div class="result-status">
+                    <p>Status</p>
+                    <span class="status-pill success">✔ Verified</span>
+                </div>
+            </div>
+            <div class="result-actions">
+                 <button class="btn btn-primary" id="downloadReport">Download Report</button>
+            </div>
+        </section>
+        
+        <section id="result-not-verified" style="display: none;">
+            <div class="hero-content">
+                <h2 class="headline">Verification Failed</h2>
+                <p class="sub-headline">The details entered correspond to a <strong class="fake-cert-notice">FAKE CERTIFICATE</strong>. Authentication failed.</p>
+            </div>
+            <div class="result-display not-verified">
+                <div class="result-header">
+                    <h4>Authentication Failure</h4>
+                    <p>This certificate is not authentic. Please check the details and try again.</p>
+                </div>
+                <div class="result-details-failed">
+                    <p>The Certificate ID, Roll Number, or Full Name you entered does not match any record in our database. This could be due to a typo or an invalid certificate.</p>
+                </div>
+                <div class="result-status">
+                    <p>Status</p>
+                    <span class="status-pill failed">❌ Not Verified</span>
+                </div>
+            </div>
+            <div class="result-actions">
+                <button class="btn btn-primary" data-target="#verify">Try Again</button>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="main-footer">
+        <p>Powered by Department of Higher & Technical Education, Jharkhand</p>
     </footer>
-  </div>
-  <script src="script.js" defer></script>
+
+    <div id="toast-container"></div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
