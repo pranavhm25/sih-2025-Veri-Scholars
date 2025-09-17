@@ -185,11 +185,12 @@ $(document).ready(function() {
         const $btn = $('#checkBtn');
         $btn.text('Checking...').prop('disabled', true);
 
-        // Valid certificate data for ALAN DOE
+        // **MODIFIED**: Changed the valid certificate data.
+        // Now, entering the details for "ALAN DOE" will fail the check.
         const mockData = {
-            certId: "1X2501176",
-            rollNum: "21CS123",
-            fullName: "ALAN DOE"
+            certId: "JHK-987-EDU",
+            rollNum: "CS-2025-007",
+            fullName: "JANE SMITH"
         };
 
         setTimeout(() => {
@@ -198,7 +199,7 @@ $(document).ready(function() {
                 rollNum.toLowerCase() === mockData.rollNum.toLowerCase() && 
                 fullName.toLowerCase() === mockData.fullName.toLowerCase()) {
                 
-                showResult({ name: mockData.fullName, roll: mockData.rollNum, institution: 'National Institute of Technology' });
+                showResult({ name: mockData.fullName, roll: mockData.rollNum, institution: 'Jharkhand Technical University' });
                 showToast("Certificate successfully verified!", "success");
             } else {
                 // On failure, show the 'not-verified' result page (fake certificate)
