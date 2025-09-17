@@ -12,8 +12,9 @@ We are building a smart, scalable, and secure Fake Degree/Certificate Recognitio
 Tech Stack  
 1. Frontend: HTML, CSS, JavaScript, jQuery  
 2. Backend: Python (Flask)  
-3. Database: SQLite  
+3. Database: SQLite
 4. Other Tools: REST APIs
+   [TO BE UPDATED]
 
 Core Features
 1. Upload & Verify: Employers, institutions, and agencies can upload or input certificate details (PDFs, scans, or digital copies).
