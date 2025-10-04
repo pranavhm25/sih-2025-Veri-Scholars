@@ -45,8 +45,8 @@ Project Structure
 
 ├── frontend/         # HTML, CSS, JS files
 ├── backend/          # Flask server and routes
-│   ├── ocr/          # Image processing and OCR files
-│   └── hash/         # Hashing logic for digital PDFs
+    ├── ocr/          # Image processing and OCR files
+    └── hash/         # Hashing logic for digital PDFs
 ├── database/         # (TO be updated , for now it is in ocr and hash seperately)
 ├── requirements.txt  # Dependencies
 └── README.md         # Documentation
@@ -55,7 +55,7 @@ Project Structure
 Team Members
 1. Akash Biswas - Backend and AI/ML model development
 2. Arav Gupta - Backend and AI/ML model development
-3. H M Pranav - FrontEnd 
+3. H M Pranav - Frontend 
 4. Dhritiiraaj Bharali - Security & Data Protection
 5. Aditi Agarwal - Web Design (UI/UX)
 6. Hrishikesh Shetty - App Development (Frontend)
