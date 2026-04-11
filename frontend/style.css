@@ -168,6 +168,7 @@ img { max-width: 100%; display: block; }
     line-height: 1.1;
     background: linear-gradient(to right, var(--primary-blue), var(--accent-purple));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 .sub-headline { font-size: 20px; color: var(--text-light); line-height: 1.6; }
@@ -175,6 +176,7 @@ img { max-width: 100%; display: block; }
 .text-gradient {
     background: linear-gradient(to right, var(--primary-blue), var(--accent-purple));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
