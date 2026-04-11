@@ -664,3 +664,139 @@ body.dark-mode .main-header { background: rgba(15, 23, 42, 0.8); }
     .result-actions { flex-direction: column; }
     .result-actions .btn { width: 100%; }
 }
+
+/* ==========================
+   BLOCKCHAIN EXPLORER UI
+   ========================== */
+.blockchain-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+}
+.block-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 24px;
+    border-radius: 12px;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s;
+}
+.block-card:hover { transform: translateY(-2px); }
+.block-card::before {
+    content: '';
+    position: absolute;
+    top: -24px;
+    left: 48px;
+    width: 2px;
+    height: 24px;
+    background: var(--primary-color);
+    opacity: 0.5;
+}
+.block-card:first-child::before { display: none; }
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 8px;
+}
+.block-hash {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--primary-color);
+    word-break: break-all;
+    background: rgba(79, 70, 229, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+.block-payload { font-size: 14px; margin-top: 8px; }
+
+/* ==========================
+   LIVE ACTIVITY FEED
+   ========================== */
+.live-feed-wrapper {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    height: 300px;
+    overflow-y: hidden;
+    position: relative;
+}
+.live-feed-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 50px;
+    background: linear-gradient(transparent, var(--body-bg));
+    border-radius: 0 0 12px 12px;
+    pointer-events: none;
+}
+.feed-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.feed-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--background);
+    border-radius: 8px;
+    font-size: 13px;
+    animation: slideDown 0.4s ease-out forwards;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================
+   FORMAL PRINT STYLES (AUDIT REPORT)
+   ========================== */
+@media print {
+    body {
+        background: #fff;
+        color: #000;
+    }
+    .main-header, .main-footer, .hero-section, .verify-tabs {
+        display: none !important;
+    }
+    .result-section {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .result-card {
+        box-shadow: none !important;
+        border: 2px solid #ccc !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    .result-actions { display: none !important; }
+    
+    .result-header-area {
+        background: transparent !important;
+        color: #000 !important;
+        border-bottom: 2px solid #ccc;
+    }
+    .result-header-area h2 { color: #000 !important; }
+    
+    /* Injecting official text for print only */
+    .result-header-area::after {
+        content: 'Official Audit Report - Department of Higher & Technical Education, Jharkhand';
+        display: block;
+        font-family: serif;
+        font-size: 12px;
+        margin-top: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .detail-grid { grid-template-columns: 1fr 1fr; border: 1px solid #eee; padding: 16px; margin-top: 24px;}
+    .detail-item p { color: #333; font-weight: bold; }
+    .detail-item strong { color: #000; }
+}

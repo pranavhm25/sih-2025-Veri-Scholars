@@ -355,6 +355,10 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                             Bulk Upload
                         </a>
+                        <a href="#" data-view="dash-ledger">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="20" height="6" rx="2"/><path d="M12 15v4M12 5v4M8 12h8"/></svg>
+                            Ledger Sync
+                        </a>
                         <a href="#" data-view="dash-alerts">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                             Security Alerts
@@ -438,6 +442,22 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Live Activity Feed Component -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3>Live Network Activity (Real-Time SOC)</h3>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="display:inline-block; width:8px; height:8px; background:#10B981; border-radius:50%; box-shadow:0 0 8px #10B981; animation:blink 2s infinite;"></span>
+                                    <small style="color:var(--text-light)">Listening...</small>
+                                </div>
+                            </div>
+                            <div class="live-feed-wrapper">
+                                <div class="feed-content" id="live-feed-content">
+                                    <!-- Feed items injected via JS -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Dashboard Upload View -->
@@ -519,6 +539,20 @@
                                 </div>
                                 <button type="button" class="btn btn-primary" onclick="alert('Demo Mode: Settings locked.')">Save Changes</button>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Ledger Explorer -->
+                    <div id="dash-ledger" class="dash-view" style="display: none;">
+                         <div class="dash-header">
+                            <div>
+                                <h2>Blockchain Ledger Explorer</h2>
+                                <p>Live view of the immutable, cryptographic transaction blocks securing the academic records.</p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="forceSync()">Force Sync</button>
+                        </div>
+                        <div class="blockchain-grid" id="blockchain-grid">
+                             <!-- Blocks injected via JS -->
                         </div>
                     </div>
 

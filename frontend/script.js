@@ -177,9 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fallback Mock Data
     const SUCCESS_MOCK_DATA = {
-        id: "JHK-2025-CS-042",
+        certificate_id: "JHK-2025-CS-042",
         name: "Aditi Sharma",
-        inst: "Birla Institute of Technology, Mesra",
+        institution: "Birla Institute of Technology, Mesra",
         course: "B.Tech Computer Science",
         year: "2025",
         doc_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -462,6 +462,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         chartsInitialized = true;
+    };
+
+    // --- Phase 3 Additions: Live SOC Feed & Blockchain Ledger ---
+    
+    // 1. Simulate Live SOC Feed
+    const feedContent = document.getElementById('live-feed-content');
+    const possibleEvents = [
+        { type: 'success', icon: '✅', text: 'Verified Record: NIT-2022-EE-199' },
+        { type: 'success', icon: '✅', text: 'Verified Record: JHK-2025-CS-042' },
+        { type: 'error', icon: '⚠', text: 'BLOCKED: Hash anomaly detected on upload from IP 192.168.1.5' },
+        { type: 'info', icon: 'ℹ', text: 'New Record Block appended to Blockchain (Batch #492)' },
+        { type: 'error', icon: '🛡️', text: 'BLOCKED: ID FAKE-10901 attempted brute force validation' }
+    ];
+
+    const generateFeedEvent = () => {
+        if (!feedContent) return;
+        const e = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+        const time = new Date().toLocaleTimeString();
+        
+        const el = document.createElement('div');
+        el.className = 'feed-item';
+        el.innerHTML = `<span>${e.icon}</span> <strong>[${time}]</strong> <span>${e.text}</span>`;
+        
+        feedContent.prepend(el);
+        // keep only 10 items max
+        if (feedContent.children.length > 10) {
+            feedContent.removeChild(feedContent.lastChild);
+        }
+    };
+
+    // Run feed tick every 3 to 8 seconds if dashboard is visible
+    setInterval(() => {
+        const overviewDash = document.getElementById('dash-overview');
+        if (overviewDash && overviewDash.style.display !== 'none') {
+            generateFeedEvent();
+        }
+    }, Math.random() * 5000 + 3000);
+
+    // 2. Initialize Simulated Blockchain Ledger
+    const initLedger = () => {
+        const grid = document.getElementById('blockchain-grid');
+        if (!grid || grid.children.length > 0) return; // already initialized
+        
+        const generateHash = () => [...Array(64)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+        
+        let prevHash = "0000000000000000000000000000000000000000000000000000000000000000";
+        for (let i = 0; i < 5; i++) {
+            const hash = generateHash();
+            const time = new Date(Date.now() - (i * 3600000)).toLocaleString(); // hours ago
+            const payload = i === 0 ? "Batch Issued: B.Tech 2025 Graduates" : "Batch Issued: B.Sc 2024 Graduates";
+            
+            const card = document.createElement('div');
+            card.className = 'block-card';
+            card.innerHTML = `
+                <div class="block-header">
+                    <strong>Block #${10425 - i}</strong>
+                    <span style="font-size:12px; color:var(--text-light)">${time}</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-light); margin-bottom:4px;">Previous Hash:</div>
+                <div class="block-hash">${prevHash}</div>
+                <div style="font-size:12px; color:var(--text-light); margin-top:12px; margin-bottom:4px;">Block Hash:</div>
+                <div class="block-hash" style="background:rgba(16,185,129,0.1); color:#10B981">${hash}</div>
+                <div class="block-payload"><strong>Verified Payload:</strong> ${payload}</div>
+            `;
+            grid.appendChild(card);
+            prevHash = hash;
+        }
+    };
+
+    // Bind Ledger init to the tab click
+    document.querySelector('.dash-nav a[data-view="dash-ledger"]').addEventListener('click', initLedger);
+
+    window.forceSync = () => {
+        const btn = document.querySelector('button[onclick="forceSync()"]');
+        btn.textContent = "Syncing...";
+        setTimeout(() => {
+            btn.textContent = "Force Sync";
+            showToast("Ledger Synchronized", "Successfully verified chain integrity across 4 nodes.", "success");
+        }, 1500);
     };
 
     // Dash Upload
