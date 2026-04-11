@@ -1,59 +1,88 @@
 # app.py
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from verifier import CertificateVerifier
-from database import session
+from database import session, VerificationLog, SecurityAlert, Certificate
+import pandas as pd
 
 app = Flask(__name__)
+# Enable CORS for the frontend port or local files
+CORS(app)
 
 # Initialize the verifier with the database session
 verifier = CertificateVerifier(session)
 
 # --- Routes ---
-@app.route("/")
-def index():
-    return render_template("index.html")
 
-@app.route("/upload", methods=["POST"])
+@app.route("/api/verify/manual", methods=["POST"])
+def verify_manual():
+    data = request.json
+    cert_id = data.get('certificate_id')
+    name = data.get('name')
+
+    if not cert_id or not name:
+        return jsonify({"success": False, "message": "Missing criteria"}), 400
+
+    success, message, anomaly_reasons, extracted_data = verifier.verify_manual(cert_id, name)
+    
+    return jsonify({
+        "success": success,
+        "message": message,
+        "anomaly_reasons": anomaly_reasons,
+        "extracted_data": extracted_data
+    }), 200
+
+@app.route("/api/verify/upload", methods=["POST"])
 def upload():
-    # Check if file part exists
     if "file" not in request.files:
-        return jsonify({
-            "extracted_data": {"name": None, "certificate_id": None, "institution": None},
-            "verification": {"success": False, "message": "No file part in request"}
-        }), 200
+        return jsonify({"success": False, "message": "No file part in request"}), 400
 
     file = request.files["file"]
     if file.filename == "":
-        return jsonify({
-            "extracted_data": {"name": None, "certificate_id": None, "institution": None},
-            "verification": {"success": False, "message": "No file selected"}
-        }), 200
+        return jsonify({"success": False, "message": "No file selected"}), 400
 
     try:
-        # Run OCR + verification
-        success, message, extracted_data = verifier.verify_file(file)
-
-        # Ensure extracted_data is always a dict with required keys
-        extracted_data = {
-            "name": extracted_data.get("name"),
-            "certificate_id": extracted_data.get("certificate_id"),
-            "institution": extracted_data.get("institution")
-        }
+        success, message, anomaly_reasons, extracted_data = verifier.verify_file(file)
 
         return jsonify({
-            "extracted_data": extracted_data,
-            "verification": {
-                "success": success,
-                "message": message
-            }
+            "success": success,
+            "message": message,
+            "anomaly_reasons": anomaly_reasons,
+            "extracted_data": extracted_data
         }), 200
 
     except Exception as e:
-        # Catch any unexpected errors and return JSON
         return jsonify({
-            "extracted_data": {"name": None, "certificate_id": None, "institution": None},
-            "verification": {"success": False, "message": f"Error: {str(e)}"}
-        }), 200
+            "success": False, 
+            "message": f"Server Error: {str(e)}",
+            "anomaly_reasons": [],
+            "extracted_data": {}
+        }), 500
+
+@app.route("/api/dashboard/stats", methods=["GET"])
+def get_stats():
+    # Basic aggregation
+    total_logs = session.query(VerificationLog).count()
+    success_logs = session.query(VerificationLog).filter_by(status_result='success').count()
+    failed_logs = session.query(VerificationLog).filter_by(status_result='failed').count()
+    records_issued = session.query(Certificate).count()
+    
+    trust_score = round((success_logs / total_logs * 100), 1) if total_logs > 0 else 100.0
+
+    return jsonify({
+        "records_issued": records_issued,
+        "total_verifications": total_logs,
+        "forged_attempts": failed_logs,
+        "trust_score": trust_score,
+    }), 200
+
+@app.route("/api/dashboard/bulk-upload", methods=["POST"])
+def bulk_upload():
+    # Simulated response
+    if "file" not in request.files:
+        return jsonify({"success": False, "message": "No file part"}), 400
+    
+    return jsonify({"success": True, "message": "Records parsed and inserted successfully", "inserted_count": 124}), 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
