@@ -1,84 +1,67 @@
 # Veri-Scholars
 The rise of fake degrees and forged academic certificates poses a serious threat to the credibility of higher education, job markets, and government schemes. Manual verification methods are slow, inconsistent, and vulnerable to corruption. To ensure academic integrity and public trust, there is a pressing need for a secure, scalable, and automated system that can detect and prevent the misuse of fraudulent certificates.
 
+![Veri-Scholars Preview](frontend/preview.png)
+
 ---
 
 ## Objectives
 1. Provide a smart, reliable, and fast verification system for certificates.  
-2. Ensure security, scalability, and transparency in validation.  
+2. Ensure security, scalability, and transparency in validation using cryptographic hashes.  
 3. Enable employers, institutions, and government agencies to easily verify academic records.
  
 ## Our Solution
-We are building a smart, scalable, and secure Fake Degree/Certificate Recognition System tailored for higher education institutions in Jharkhand, with the ability to scale nationwide. The platform combines AI, OCR, and blockchain technologies to provide a seamless and trustworthy way to validate academic credentials.
+Built for SIH 2025 (Problem Statement 25029), **Veri-Scholars** is a smart, scalable, and secure Fake Degree Verification System tailored for higher education institutions in Jharkhand. The platform combines AI-driven OCR extraction with cryptographic verification to provide a seamless and trustworthy way to validate academic credentials.
 
-## Tech Stack  
-1. Frontend: HTML, CSS, JavaScript, jQuery  
-2. Backend: Python (Flask)  
-3. Database: SQLite
-4. Other Tools: REST APIs
-   [TO BE UPDATED]
+## Premium Tech Stack  
+1. **Frontend**: HTML5, CSS3 (Glassmorphism & Gradients), Vanilla JavaScript, Chart.js (Analytics)
+2. **Backend**: Python (Flask REST API)
+3. **AI / ML**: pytesseract (OCR), OpenCV (Image Preprocessing), SentenceTransformers (Entity Matching)
+4. **Database**: SQLite with SQLAlchemy ORM
+5. **Security**: SHA-256 Cryptographic Document Hashing
 
 ## Core Features
-1. Upload & Verify: Employers, institutions, and agencies can upload or input certificate details (PDFs, scans, or digital copies).
-2. AI + OCR Extraction: Automatically extracts key details (student name, roll number, marks, certificate ID) from uploaded documents.
-3. Database Cross-Verification: Matches extracted data against verified institutional records to detect mismatches or inconsistencies.
-4. Forgery Detection: Identifies tampered photos, fake seals, forged signatures, duplicate IDs, and cloned certificates.
-5. Blockchain / Digital Watermarking: Ensures newly issued certificates are tamper-proof and easily verifiable.
-6. Institution Integration Module: Allows universities and colleges to bulk-upload or sync certificate records in real time.
-7. Admin Dashboard: For state departments to monitor verifications, flag suspicious activity, and generate forgery trend reports.
-8. Alerts & Notifications: Immediate alerts for invalid or forged entries.
-9. Data Privacy & Security: Implements strict access control and encryption to protect sensitive student data.
+1. **Upload & Verify**: Drag-and-drop interface for employers/agencies to test scanned certificates against absolute truth parameters.
+2. **AI Extractor**: Automatically pulls key details (student name, roll number, marks, certificate ID) from unstructured document uploads.
+3. **QR Code Simulator**: Mock interface demonstrating instant verification capability of printed QR markers on degrees.
+4. **Anomaly Dashboard**: Comprehensive metrics via Chart.js displaying forgery trends, volume trackers, and real-time security alerts.
+5. **Role-Based Access**: Specialized portals for institutions to bulk-upload immutable records securely.
 
-## Impact & Benefits
-1. Protects academic integrity and institutional reputation.
-2. Speeds up verification for jobs, admissions, and government schemes.
-3. Prevents fraud by ensuring only authentic credentials are accepted.
-4. Builds trust between students, institutions, employers, and government bodies.
-5. Supports Digital India goals by enabling a transparent and future-proof education ecosystem.
+## Getting Started (Demo Mode)
 
-## Target Users
-1. Employers & HR departments
-2. Universities & colleges
-3. Scholarship agencies
-4. Admission offices
-5. Government departments
+The frontend overhaul can be entirely previewed without running the backend! We've included a highly realistic simulation mode.
 
-## Project Structure
+1. Open `frontend/index.html` in your favorite modern browser.
+2. On the **Verify** tab, try entering the ID `JHK-2025-CS-042` and the name `Aditi Sharma` to see a successful AI verification.
+3. Enter any random string for a failed anomaly detection example.
+4. Log into the Institution Portal by clicking "Use Demo Account".
 
-├── frontend/         # HTML, CSS, JS files
-├── backend/          # Flask server and routes
-    ├── ocr/          # Image processing and OCR files
-    └── hash/         # Hashing logic for digital PDFs
-├── database/         # (TO be updated , for now it is in ocr and hash seperately)
-├── requirements.txt  # Dependencies
-└── README.md         # Documentation
+## Getting Started (Backend API)
+*Prerequisites*: Python 3.8+ and Tesseract-OCR installed on your system.
 
+```bash
+# 1. Navigate to the OCR backend folder
+cd backend/ocr
+
+# 2. Install dependencies
+pip install -r requirements.txt
+# (Dependencies include Flask, PyTesseract, OpenCV-python, sentence-transformers, SQLAlchemy)
+
+# 3. Initialise the database
+python database.py
+
+# 4. Run the API Layer
+python app.py
+```
 
 ## Team Members
-1. Akash Biswas - Backend and AI/ML model development
-2. Arav Gupta - Backend and AI/ML model development
-3. H M Pranav - Frontend 
-4. Dhritiiraaj Bharali - Security & Data Protection
-5. Aditi Agarwal - Web Design (UI/UX)
-6. Hrishikesh Shetty - App Development (Frontend)
-
-## Future Scope
-1. Blockchain-based certificate storage.
-2. AI-powered fraud detection.
-4. Mobile application for on-the-go verification.
-
-## Scalability
-While initially focused on Jharkhand institutions, the system is designed for pan-India adoption, making it a long-term solution for nationwide academic fraud prevention.
-(It is just a prototype, the project hasn't been completed)
-
-## Getting Started  
-Prerequisites  
-- Install [Python 3.x](https://www.python.org/downloads/)  
-- Install Flask:  (would be updated)
-  ```bash
-  pip install flask
+* Akash Biswas - Backend and AI/ML model development
+* Arav Gupta - Backend and AI/ML model development
+* H M Pranav - Frontend 
+* Dhritiiraaj Bharali - Security & Data Protection
+* Aditi Agarwal - Web Design (UI/UX)
+* Hrishikesh Shetty - App Development (Frontend)
 
 ---
 
-This project was built as part of Smart India Hackathon 2025, under the problem statement:
-“Authenticity Validator for Academia”
+*Powered by the Department of Higher & Technical Education, Jharkhand*
