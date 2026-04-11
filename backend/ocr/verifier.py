@@ -34,6 +34,19 @@ class CertificateVerifier:
         file_stream.seek(0)
         return sha256.hexdigest()
 
+    def _mask_name(self, name):
+        """Masks a name for public query (e.g. Aditi Sharma -> A**** S*****)."""
+        if not name:
+            return "Unknown"
+        parts = name.split(" ")
+        masked = []
+        for p in parts:
+            if len(p) > 1:
+                masked.append(p[0] + ("*" * (len(p)-1)))
+            else:
+                masked.append(p)
+        return " ".join(masked)
+
     def verify_manual(self, cert_id, name):
         """
         Verify manually entered details against DB.
@@ -55,7 +68,7 @@ class CertificateVerifier:
         self._log_verification('manual', cert_id, 'success', 100.0)
         
         extracted = {
-            "name": cert.name,
+            "name": self._mask_name(cert.name),
             "certificate_id": cert.certificate_id,
             "institution": cert.institution,
             "course": cert.course,
@@ -111,7 +124,7 @@ class CertificateVerifier:
             self._log_verification('upload', cert_id, 'success', score)
             
             # Enrich extracted data with DB stuff for display
-            extracted_data["name"] = cert.name
+            extracted_data["name"] = self._mask_name(cert.name)
             extracted_data["institution"] = cert.institution
             extracted_data["course"] = cert.course
             extracted_data["year"] = cert.year

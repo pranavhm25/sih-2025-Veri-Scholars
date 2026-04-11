@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- API & Demo Verification Logic ---
-    const API_BASE = "http://localhost:5000/api";
+    const API_BASE = window.location.origin === "file://" ? "http://127.0.0.1:5000/api" : "/api";
     
     // Fallback Mock Data
     const SUCCESS_MOCK_DATA = {
@@ -314,7 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Upload API failed, falling back to Demo:", err);
             setTimeout(() => {
                 overlay.classList.remove('active');
-                processFallbackDemo('SUCCESS', 'Extracted User');
+                // Removed forced 'SUCCESS'. Pass 'UNKNOWN' to simulate a failed AI OCR parse.
+                processFallbackDemo('UNKNOWN', 'Unidentified Upload');
             }, 2500);
         }
     };

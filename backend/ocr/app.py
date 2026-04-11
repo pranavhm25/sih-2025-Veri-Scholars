@@ -1,20 +1,37 @@
 # app.py
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from verifier import CertificateVerifier
 from database import session, VerificationLog, SecurityAlert, Certificate
 import pandas as pd
+import os
 
-app = Flask(__name__)
-# Enable CORS for the frontend port or local files
+# Serve the frontend directory statically
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'frontend'))
+app = Flask(__name__, static_folder=frontend_dir, static_url_path='/')
+
 CORS(app)
+
+# Initialize Limiter
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 # Initialize the verifier with the database session
 verifier = CertificateVerifier(session)
 
 # --- Routes ---
 
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
+
 @app.route("/api/verify/manual", methods=["POST"])
+@limiter.limit("5 per minute")
 def verify_manual():
     data = request.json
     cert_id = data.get('certificate_id')
@@ -33,6 +50,7 @@ def verify_manual():
     }), 200
 
 @app.route("/api/verify/upload", methods=["POST"])
+@limiter.limit("5 per minute")
 def upload():
     if "file" not in request.files:
         return jsonify({"success": False, "message": "No file part in request"}), 400
