@@ -54,9 +54,17 @@ class OCRProcessor:
         return None
 
     def extract_certificate_id(self, text_clean):
+        # Match pattern like JHK-2025-CS-042 or JHK-2024-ME-109
+        # Looks for 3 or more uppercase letters, a dash, 4 digits, a dash, and some alphanumeric letters/dashes.
+        match = re.search(r'([A-Z]{3,}-\d{4}-[A-Z0-9-]+)', text_clean.upper())
+        if match:
+            # Clean up trailing dashes or spaces if any
+            return match.group(1).strip("- ")
+            
+        # Fallback to the normalized 1X format
         text_norm = text_clean.upper().replace("O", "0").replace("I", "1").replace(" ", "")
-        match = re.search(r'1X\d{4,}', text_norm)
-        return match.group(0) if match else None
+        match_fallback = re.search(r'1X\d{4,}', text_norm)
+        return match_fallback.group(0) if match_fallback else None
 
     def extract_institution(self, text_clean):
         # Try regex first
