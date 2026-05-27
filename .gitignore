@@ -17,3 +17,12 @@ Thumbs.db
 .idea/
 
 *.log
+
+# Prevent committing PII or test data
+*.csv
+*.xlsx
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
