@@ -38,6 +38,8 @@ class SecurityAlert(Base):
     severity = Column(String, nullable=False) # 'High', 'Medium', 'Low'
     cert_id_used = Column(String, nullable=True)
     risk_factor = Column(String, nullable=False) # e.g. "Hash Tampering"
+    ip_address = Column(String, nullable=True)   # Source IP of the request
+    user_agent = Column(String, nullable=True)   # Browser/client user-agent string
 
 # --- Create SQLite engine and table ---
 engine = create_engine(

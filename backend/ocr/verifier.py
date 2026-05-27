@@ -1,8 +1,14 @@
 # verifier.py
 import hashlib
+import hmac
+import os
 from OCRProcessor import OCRProcessor
 from database import session, Certificate, VerificationLog, SecurityAlert
 from flask import request
+
+# Secret key for HMAC-SHA256 document hashing.
+# In production, set the VERI_HASH_SECRET environment variable.
+HASH_SECRET = os.environ.get("VERI_HASH_SECRET", "veri-scholars-dev-key-change-in-production").encode("utf-8")
 
 class CertificateVerifier:
     def __init__(self, session):
@@ -10,9 +16,18 @@ class CertificateVerifier:
 
     def _get_client_ip(self):
         try:
+            # Support reverse-proxy setups (e.g. behind Nginx/Gunicorn)
+            if request.headers.get("X-Forwarded-For"):
+                return request.headers["X-Forwarded-For"].split(",")[0].strip()
             return request.remote_addr
         except:
             return "127.0.0.1"
+
+    def _get_user_agent(self):
+        try:
+            return request.headers.get("User-Agent", "Unknown")
+        except:
+            return "Unknown"
 
     def _log_verification(self, endpoint, cert_id, status, score):
         ip = self._get_client_ip()
@@ -21,18 +36,26 @@ class CertificateVerifier:
         self.session.commit()
     
     def _log_alert(self, cert_id, risk_factor, severity="High"):
-        alert = SecurityAlert(severity=severity, cert_id_used=cert_id, risk_factor=risk_factor)
+        ip = self._get_client_ip()
+        user_agent = self._get_user_agent()
+        alert = SecurityAlert(
+            severity=severity,
+            cert_id_used=cert_id,
+            risk_factor=risk_factor,
+            ip_address=ip,
+            user_agent=user_agent
+        )
         self.session.add(alert)
         self.session.commit()
 
     def _compute_hash(self, file_stream):
-        # We need to read the stream, compute hash, then reset stream
+        """Compute HMAC-SHA256 keyed hash of the document for tamper-proof verification."""
         file_stream.seek(0)
-        sha256 = hashlib.sha256()
+        mac = hmac.new(HASH_SECRET, digestmod=hashlib.sha256)
         for chunk in iter(lambda: file_stream.read(4096), b""):
-            sha256.update(chunk)
+            mac.update(chunk)
         file_stream.seek(0)
-        return sha256.hexdigest()
+        return mac.hexdigest()
 
     def _mask_name(self, name):
         """Masks a name for public query (e.g. Aditi Sharma -> A**** S*****)."""
