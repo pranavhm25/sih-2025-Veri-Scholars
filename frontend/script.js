@@ -307,8 +307,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) throw new Error("API Offline");
             
             const data = await res.json();
-            overlay.classList.remove('active');
-            renderResult(data.success ? data.extracted_data : data, data.success);
+            
+            if (data.job_id) {
+                // Poll for background task completion
+                const pollInterval = setInterval(async () => {
+                    try {
+                        const statusRes = await fetch(`${API_BASE}/verify/status/${data.job_id}`);
+                        if (statusRes.ok) {
+                            const statusData = await statusRes.json();
+                            if (statusData.status === 'completed' || statusData.status === 'failed') {
+                                clearInterval(pollInterval);
+                                overlay.classList.remove('active');
+                                const finalResult = statusData.result;
+                                renderResult(finalResult.success ? finalResult.extracted_data : finalResult, finalResult.success);
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Polling error", e);
+                    }
+                }, 1000);
+            } else {
+                // Fallback if returned synchronously (shouldn't happen with updated backend)
+                overlay.classList.remove('active');
+                renderResult(data.success ? data.extracted_data : data, data.success);
+            }
 
         } catch (err) {
             console.error("Upload API failed, falling back to Demo:", err);

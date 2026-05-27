@@ -7,6 +7,9 @@ from verifier import CertificateVerifier
 from database import session, VerificationLog, SecurityAlert, Certificate
 import pandas as pd
 import os
+import uuid
+import io
+from concurrent.futures import ThreadPoolExecutor
 
 # Serve the frontend directory statically
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'frontend'))
@@ -23,6 +26,46 @@ limiter = Limiter(
 
 # Initialize the verifier with the database session
 verifier = CertificateVerifier(session)
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    session.remove()
+
+# --- Async Task Queue Setup ---
+executor = ThreadPoolExecutor(max_workers=4)
+jobs = {}
+
+class DummyFileStorage:
+    def __init__(self, stream, filename):
+        self.stream = stream
+        self.filename = filename
+
+def process_upload_background(job_id, file_bytes, filename):
+    try:
+        dummy_file = DummyFileStorage(io.BytesIO(file_bytes), filename)
+        success, message, anomaly_reasons, extracted_data = verifier.verify_file(dummy_file)
+        jobs[job_id] = {
+            "status": "completed",
+            "result": {
+                "success": success,
+                "message": message,
+                "anomaly_reasons": anomaly_reasons,
+                "extracted_data": extracted_data
+            }
+        }
+    except Exception as e:
+        jobs[job_id] = {
+            "status": "failed",
+            "result": {
+                "success": False,
+                "message": f"Server Error: {str(e)}",
+                "anomaly_reasons": [],
+                "extracted_data": {}
+            }
+        }
+    finally:
+        # Cleanup the thread-local session for this background thread
+        session.remove()
 
 # --- Routes ---
 
@@ -75,22 +118,40 @@ def upload():
         return jsonify({"success": False, "message": f"File too large ({file_size // (1024*1024)}MB). Maximum is 10MB."}), 400
 
     try:
-        success, message, anomaly_reasons, extracted_data = verifier.verify_file(file)
-
+        # Read file into memory so it survives the request context
+        file_bytes = file.read()
+        filename = file.filename
+        
+        job_id = str(uuid.uuid4())
+        jobs[job_id] = {"status": "processing"}
+        
+        # Submit to background worker
+        executor.submit(process_upload_background, job_id, file_bytes, filename)
+        
         return jsonify({
-            "success": success,
-            "message": message,
-            "anomaly_reasons": anomaly_reasons,
-            "extracted_data": extracted_data
-        }), 200
+            "success": True,
+            "message": "Upload received, processing in background.",
+            "job_id": job_id
+        }), 202
 
     except Exception as e:
         return jsonify({
             "success": False, 
             "message": f"Server Error: {str(e)}",
-            "anomaly_reasons": [],
-            "extracted_data": {}
         }), 500
+
+@app.route("/api/verify/status/<job_id>", methods=["GET"])
+def get_job_status(job_id):
+    job = jobs.get(job_id)
+    if not job:
+        return jsonify({"success": False, "message": "Job not found"}), 404
+        
+    if job["status"] == "processing":
+        return jsonify({"status": "processing"}), 200
+        
+    # Once retrieved, we can delete the job to save memory, or keep it. We'll delete it.
+    result = jobs.pop(job_id)
+    return jsonify({"status": result["status"], "result": result["result"]}), 200
 
 @app.route("/api/dashboard/stats", methods=["GET"])
 def get_stats():

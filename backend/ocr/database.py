@@ -1,6 +1,6 @@
 # database.py
 from sqlalchemy import Column, Integer, String, create_engine, DateTime, ForeignKey, Float
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session
 import datetime
 
 # --- Base and Table ---
@@ -51,7 +51,7 @@ Base.metadata.create_all(engine)
 
 # --- Create session ---
 Session = sessionmaker(bind=engine)
-session = Session()
+session = scoped_session(Session)
 
 # --- Initialize database only when run directly ---
 if __name__ == "__main__":
