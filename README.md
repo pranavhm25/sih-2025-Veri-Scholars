@@ -67,21 +67,24 @@ flowchart LR
 
     subgraph Server["⚙️ Backend (Flask)"]
         API["REST API"]
+        Queue["Async Task Queue\n(ThreadPoolExecutor)"]
         OCR["OCR Processor\n(Tesseract + OpenCV)"]
         NLP["Entity Matcher\n(SentenceTransformers)"]
-        Hash["SHA-256\nHash Verifier"]
+        Hash["HMAC-SHA256\nHash Verifier"]
     end
 
     subgraph Data["🗄️ Database"]
-        DB[("SQLite\n(SQLAlchemy)")]
+        DB[("SQLite\n(SQLAlchemy scoped_session)")]
     end
 
     UI -- "Upload / Manual Entry" --> API
-    API --> OCR
+    API -- "Background Task" --> Queue
+    Queue --> OCR
     OCR --> NLP
     NLP --> Hash
     Hash --> DB
-    DB -- "Verification Result" --> API
+    DB -- "Verification Result" --> Queue
+    Queue -- "Polling Status" --> API
     API -- "JSON Response" --> UI
     API -- "Stats" --> Charts
 ```
@@ -92,12 +95,11 @@ flowchart LR
 
 | Feature | Description |
 |---------|-------------|
-| **📤 Upload & Verify** | Drag-and-drop interface for employers/agencies to test scanned certificates against verified records. |
-| **🤖 AI Extractor (OCR)** | Automatically pulls key details (student name, roll number, marks, certificate ID) from unstructured document uploads using PyTesseract & OpenCV. |
-| **📱 QR Code Simulator** | Mock interface demonstrating instant verification capability of printed QR markers on degrees. |
+| **📤 Upload & Verify** | Drag-and-drop interface for employers/agencies to test scanned certificates against verified records. Backed by a non-blocking **Async Task Queue** for handling heavy files. |
+| **🤖 AI Extractor (OCR)** | Automatically pulls key details from unstructured documents using PyTesseract. Includes **auto-deskewing** via OpenCV to correct angled scans. |
+| **🧠 Smart Entity Matching** | **Fuzzy matching** and `SentenceTransformers` gracefully handle OCR typos and resolve academic institutions (optimized for Jharkhand). |
 | **📊 Anomaly Dashboard** | Comprehensive metrics via Chart.js — forgery trends, volume trackers, and real-time security alerts. |
-| **🔐 Role-Based Access** | Specialized portals for institutions to bulk-upload immutable records securely. |
-| **🛡️ SHA-256 Hashing** | Cryptographic document hashing ensures tamper-proof certificate integrity. |
+| **🔐 Advanced Security** | **Brute-force detection** with auto-escalating IPs, strict input sanitization, and **HMAC-SHA256 keyed hashing** ensures tamper-proof integrity. |
 
 ---
 
@@ -258,7 +260,9 @@ curl http://localhost:5000/api/dashboard/stats
   "records_issued": 12453,
   "total_verifications": 340,
   "forged_attempts": 3,
-  "trust_score": 99.1
+  "trust_score": 99.1,
+  "total_security_alerts": 12,
+  "critical_alerts": 1
 }
 ```
 </details>
