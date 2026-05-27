@@ -52,12 +52,27 @@ def verify_manual():
 @app.route("/api/verify/upload", methods=["POST"])
 @limiter.limit("5 per minute")
 def upload():
+    ALLOWED_EXTENSIONS = {'.pdf', '.jpg', '.jpeg', '.png'}
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+
     if "file" not in request.files:
         return jsonify({"success": False, "message": "No file part in request"}), 400
 
     file = request.files["file"]
     if file.filename == "":
         return jsonify({"success": False, "message": "No file selected"}), 400
+
+    # Validate file extension
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({"success": False, "message": f"File type '{ext}' not allowed. Accepted: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
+
+    # Validate file size
+    file.seek(0, 2)  # Seek to end
+    file_size = file.tell()
+    file.seek(0)     # Reset to beginning
+    if file_size > MAX_FILE_SIZE:
+        return jsonify({"success": False, "message": f"File too large ({file_size // (1024*1024)}MB). Maximum is 10MB."}), 400
 
     try:
         success, message, anomaly_reasons, extracted_data = verifier.verify_file(file)

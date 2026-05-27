@@ -2,6 +2,7 @@
 import hashlib
 import hmac
 import os
+import re
 from OCRProcessor import OCRProcessor
 from database import session, Certificate, VerificationLog, SecurityAlert
 from flask import request
@@ -10,9 +11,40 @@ from flask import request
 # In production, set the VERI_HASH_SECRET environment variable.
 HASH_SECRET = os.environ.get("VERI_HASH_SECRET", "veri-scholars-dev-key-change-in-production").encode("utf-8")
 
+# --- Input validation constants ---
+MAX_CERT_ID_LENGTH = 50
+MAX_NAME_LENGTH = 150
+CERT_ID_PATTERN = re.compile(r'^[A-Za-z0-9\-\.]+$')  # Alphanumeric, hyphens, dots
+NAME_PATTERN = re.compile(r'^[A-Za-z\s\.\-\']+$')     # Letters, spaces, dots, hyphens, apostrophes
+
+
 class CertificateVerifier:
     def __init__(self, session):
         self.session = session
+
+    @staticmethod
+    def _sanitize_cert_id(cert_id):
+        """Validate and sanitize certificate ID input."""
+        if not cert_id or not isinstance(cert_id, str):
+            return None, "Certificate ID is required"
+        cert_id = cert_id.strip()
+        if len(cert_id) > MAX_CERT_ID_LENGTH:
+            return None, f"Certificate ID exceeds maximum length of {MAX_CERT_ID_LENGTH} characters"
+        if not CERT_ID_PATTERN.match(cert_id):
+            return None, "Certificate ID contains invalid characters"
+        return cert_id, None
+
+    @staticmethod
+    def _sanitize_name(name):
+        """Validate and sanitize name input."""
+        if not name or not isinstance(name, str):
+            return None, "Name is required"
+        name = " ".join(name.strip().split())  # Normalize whitespace
+        if len(name) > MAX_NAME_LENGTH:
+            return None, f"Name exceeds maximum length of {MAX_NAME_LENGTH} characters"
+        if not NAME_PATTERN.match(name):
+            return None, "Name contains invalid characters"
+        return name, None
 
     def _get_client_ip(self):
         try:
@@ -90,6 +122,17 @@ class CertificateVerifier:
         """
         Verify manually entered details against DB.
         """
+        # Sanitize inputs
+        cert_id, id_err = self._sanitize_cert_id(cert_id)
+        if id_err:
+            self._log_alert(cert_id or "INVALID", f"Input rejected: {id_err}", severity="Medium")
+            return False, id_err, ["Invalid input provided"], {}
+
+        name, name_err = self._sanitize_name(name)
+        if name_err:
+            self._log_alert(cert_id, f"Input rejected: {name_err}", severity="Medium")
+            return False, name_err, ["Invalid input provided"], {}
+
         cert = self.session.query(Certificate).filter_by(certificate_id=cert_id).first()
         if not cert:
             self._log_verification('manual', cert_id, 'failed', 0.0)
