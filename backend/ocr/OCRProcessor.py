@@ -8,15 +8,26 @@ class OCRProcessor:
     # Load embedding model once (shared across instances)
     model = SentenceTransformer('all-MiniLM-L6-v2')
     known_institutions = [
-        "Ramaiah",
-        "IIIT Dharwad",
-        "IIIT Bhubaneswar",
-        "IISc Bangalore",
-        "IIT Bombay",
-        "IIT Delhi",
-        "NIT Trichy",
-        "Delhi University",
-        "Anna University"
+        # Premier Institutes
+        "Birla Institute of Technology, Mesra",
+        "IIT (ISM) Dhanbad",
+        "NIT Jamshedpur",
+        "Central University of Jharkhand",
+        "XLRI Jamshedpur",
+        # State Universities
+        "Ranchi University",
+        "Vinoba Bhave University, Hazaribagh",
+        "Kolhan University, Chaibasa",
+        "Sido Kanhu Murmu University, Dumka",
+        "Nilamber Pitamber University, Medininagar",
+        # Engineering & Technical Colleges
+        "BIT Sindri",
+        "University College of Engineering & Technology, Hazaribagh",
+        "Cambridge Institute of Technology, Ranchi",
+        "Jharkhand Rai University",
+        # Other Notable Institutions
+        "Birsa Agricultural University, Ranchi",
+        "Rajendra Institute of Medical Sciences, Ranchi",
     ]
 
     def __init__(self, file_storage):
