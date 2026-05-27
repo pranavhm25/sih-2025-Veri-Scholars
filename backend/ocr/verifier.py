@@ -47,6 +47,22 @@ class CertificateVerifier:
                 masked.append(p)
         return " ".join(masked)
 
+    def _is_fuzzy_match(self, name_a, name_b, threshold=0.8):
+        import difflib
+        if not name_a or not name_b:
+            return False
+        # Clean names slightly for comparison (lowercase and strip extra whitespaces)
+        clean_a = " ".join(name_a.lower().split())
+        clean_b = " ".join(name_b.lower().split())
+        
+        # Exact substring match
+        if clean_a in clean_b or clean_b in clean_a:
+            return True
+            
+        # Fuzzy match
+        ratio = difflib.SequenceMatcher(None, clean_a, clean_b).ratio()
+        return ratio >= threshold
+
     def verify_manual(self, cert_id, name):
         """
         Verify manually entered details against DB.
@@ -57,8 +73,8 @@ class CertificateVerifier:
             self._log_alert(cert_id, "Certificate ID not found")
             return False, "Certificate ID not found in database", [], {"certificate_id": cert_id, "name": name}
         
-        # Simple name check (case-insensitive)
-        if name.lower() not in cert.name.lower() and cert.name.lower() not in name.lower():
+        # Fuzzy name check
+        if not self._is_fuzzy_match(name, cert.name):
             self._log_verification('manual', cert_id, 'failed', 45.0)
             self._log_alert(cert_id, "Name mismatch")
             return False, "Name mismatch", ["Name entered does not match our records"], {
@@ -110,9 +126,9 @@ class CertificateVerifier:
             score -= 50.0
             self._log_alert(cert_id, "Hash Tampering")
 
-        # Step 5: Name check
+        # Step 5: Name check with fuzzy matching
         ext_name = extracted_data.get("name", "")
-        if ext_name and ext_name.lower() not in cert.name.lower() and cert.name.lower() not in ext_name.lower():
+        if ext_name and not self._is_fuzzy_match(ext_name, cert.name):
             anomaly_reasons.append("Extracted student name does not match database record.")
             score -= 20.0
             self._log_alert(cert_id, "Name Tampering")
