@@ -24,11 +24,13 @@
 
 - [Problem Statement](#-problem-statement)
 - [Our Solution](#-our-solution)
+- [Architecture](#-architecture)
 - [Core Features](#-core-features)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [API Reference](#-api-reference)
+- [Target Users](#-target-users)
 - [Impact & Benefits](#-impact--benefits)
 - [Future Roadmap](#-future-roadmap)
 - [Team Members](#-team-members)
@@ -51,6 +53,38 @@ Built for **Smart India Hackathon 2025** (Problem Statement **25029**), **Veri-S
 1. Provide a smart, reliable, and fast verification system for certificates.
 2. Ensure security, scalability, and transparency in validation using **cryptographic hashes**.
 3. Enable employers, institutions, and government agencies to easily verify academic records.
+
+---
+
+## 🏗 Architecture
+
+```mermaid
+flowchart LR
+    subgraph Client["🖥️ Frontend"]
+        UI["HTML/CSS/JS SPA"]
+        Charts["Chart.js Analytics"]
+    end
+
+    subgraph Server["⚙️ Backend (Flask)"]
+        API["REST API"]
+        OCR["OCR Processor\n(Tesseract + OpenCV)"]
+        NLP["Entity Matcher\n(SentenceTransformers)"]
+        Hash["SHA-256\nHash Verifier"]
+    end
+
+    subgraph Data["🗄️ Database"]
+        DB[("SQLite\n(SQLAlchemy)")]
+    end
+
+    UI -- "Upload / Manual Entry" --> API
+    API --> OCR
+    OCR --> NLP
+    NLP --> Hash
+    Hash --> DB
+    DB -- "Verification Result" --> API
+    API -- "JSON Response" --> UI
+    API -- "Stats" --> Charts
+```
 
 ---
 
@@ -174,9 +208,76 @@ The API server will start at `http://localhost:5000` and also serve the frontend
 | `GET` | `/api/dashboard/stats` | Get dashboard statistics (records, verifications, trust score) | — |
 | `POST` | `/api/dashboard/bulk-upload` | Bulk upload institutional records | — |
 
+<details>
+<summary><strong>📝 Example: Manual Verification</strong></summary>
+
+**Request**
+```bash
+curl -X POST http://localhost:5000/api/verify/manual \
+  -H "Content-Type: application/json" \
+  -d '{"certificate_id": "JHK-2025-CS-042", "name": "Aditi Sharma"}'
+```
+
+**Response (Success)**
+```json
+{
+  "success": true,
+  "message": "Certificate verified successfully",
+  "anomaly_reasons": [],
+  "extracted_data": {
+    "name": "Aditi Sharma",
+    "roll_number": "CS-2025-042",
+    "institution": "BIT Mesra",
+    "certificate_id": "JHK-2025-CS-042"
+  }
+}
+```
+
+**Response (Failure)**
+```json
+{
+  "success": false,
+  "message": "Certificate verification failed",
+  "anomaly_reasons": ["Name mismatch", "Certificate ID not found"],
+  "extracted_data": {}
+}
+```
+</details>
+
+<details>
+<summary><strong>📝 Example: Dashboard Stats</strong></summary>
+
+**Request**
+```bash
+curl http://localhost:5000/api/dashboard/stats
+```
+
+**Response**
+```json
+{
+  "records_issued": 12453,
+  "total_verifications": 340,
+  "forged_attempts": 3,
+  "trust_score": 99.1
+}
+```
+</details>
+
 ---
 
-## 🎯 Impact & Benefits
+## 🎯 Target Users
+
+| User | Use Case |
+|------|----------|
+| 🏢 **Employers & HR** | Verify candidate credentials before hiring |
+| 🎓 **Universities & Colleges** | Issue tamper-proof certificates and manage records |
+| 📋 **Scholarship Agencies** | Validate academic eligibility for grants |
+| 🏫 **Admission Offices** | Cross-verify transfer/prior-education certificates |
+| 🏛 **Government Departments** | Audit academic credentials for public-sector schemes |
+
+---
+
+## 💪 Impact & Benefits
 
 - 🛡️ **Protects academic integrity** and institutional reputation.
 - ⚡ **Speeds up verification** for jobs, admissions, and government schemes.
