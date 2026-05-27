@@ -60,12 +60,19 @@ class CertificateVerifier:
             return request.headers.get("User-Agent", "Unknown")
         except:
             return "Unknown"
+    # Brute-force detection thresholds
+    BRUTE_FORCE_THRESHOLD = 5         # Number of failures before escalation
+    BRUTE_FORCE_WINDOW_MINUTES = 15   # Time window to check
 
     def _log_verification(self, endpoint, cert_id, status, score):
         ip = self._get_client_ip()
         log = VerificationLog(endpoint_used=endpoint, cert_id_searched=cert_id, ip_address=ip, status_result=status, confidence_score=score)
         self.session.add(log)
         self.session.commit()
+
+        # Check for brute-force after a failed verification
+        if status == 'failed':
+            self._check_brute_force(ip)
     
     def _log_alert(self, cert_id, risk_factor, severity="High"):
         ip = self._get_client_ip()
@@ -79,6 +86,41 @@ class CertificateVerifier:
         )
         self.session.add(alert)
         self.session.commit()
+
+    def _check_brute_force(self, ip):
+        """Detect repeated failed verifications from the same IP within a time window."""
+        import datetime
+        cutoff = datetime.datetime.utcnow() - datetime.timedelta(minutes=self.BRUTE_FORCE_WINDOW_MINUTES)
+        recent_failures = (
+            self.session.query(VerificationLog)
+            .filter(
+                VerificationLog.ip_address == ip,
+                VerificationLog.status_result == 'failed',
+                VerificationLog.timestamp >= cutoff
+            )
+            .count()
+        )
+        if recent_failures >= self.BRUTE_FORCE_THRESHOLD:
+            # Check if we already raised a brute-force alert for this IP in this window
+            existing_bf_alert = (
+                self.session.query(SecurityAlert)
+                .filter(
+                    SecurityAlert.ip_address == ip,
+                    SecurityAlert.risk_factor == "Brute-force attempt detected",
+                    SecurityAlert.timestamp >= cutoff
+                )
+                .first()
+            )
+            if not existing_bf_alert:
+                bf_alert = SecurityAlert(
+                    severity="Critical",
+                    cert_id_used="MULTIPLE",
+                    risk_factor="Brute-force attempt detected",
+                    ip_address=ip,
+                    user_agent=self._get_user_agent()
+                )
+                self.session.add(bf_alert)
+                self.session.commit()
 
     def _compute_hash(self, file_stream):
         """Compute HMAC-SHA256 keyed hash of the document for tamper-proof verification."""

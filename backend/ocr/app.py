@@ -100,6 +100,10 @@ def get_stats():
     failed_logs = session.query(VerificationLog).filter_by(status_result='failed').count()
     records_issued = session.query(Certificate).count()
     
+    # Security metrics
+    critical_alerts = session.query(SecurityAlert).filter_by(severity='Critical').count()
+    total_alerts = session.query(SecurityAlert).count()
+
     trust_score = round((success_logs / total_logs * 100), 1) if total_logs > 0 else 100.0
 
     return jsonify({
@@ -107,6 +111,8 @@ def get_stats():
         "total_verifications": total_logs,
         "forged_attempts": failed_logs,
         "trust_score": trust_score,
+        "critical_alerts": critical_alerts,
+        "total_security_alerts": total_alerts,
     }), 200
 
 @app.route("/api/dashboard/bulk-upload", methods=["POST"])
