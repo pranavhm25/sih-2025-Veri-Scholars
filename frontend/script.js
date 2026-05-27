@@ -568,12 +568,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dash Upload
     document.getElementById('dashUploadBtn').addEventListener('click', () => document.getElementById('dashFileInput').click());
-    document.getElementById('dashFileInput').addEventListener('change', (e) => {
+    document.getElementById('dashFileInput').addEventListener('change', async (e) => {
         if(e.target.files.length > 0) {
-            showToast("Upload Started", `Processing ${e.target.files[0].name}...`, "info");
-            setTimeout(() => {
-                showToast("Upload Complete", "124 records added to the blockchain ledger.", "success");
-            }, 2000);
+            const file = e.target.files[0];
+            showToast("Upload Started", `Processing ${file.name}...`, "info");
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const res = await fetch(`${API_BASE}/dashboard/bulk-upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast("Upload Complete", data.message, "success");
+                } else {
+                    showToast("Upload Failed", data.message || "Server Error", "error");
+                }
+            } catch (err) {
+                console.error("Bulk upload failed:", err);
+                showToast("Upload Failed", "Could not connect to the API.", "error");
+            }
         }
     });
 

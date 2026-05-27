@@ -100,16 +100,5 @@ if __name__ == "__main__":
             cert = Certificate(**cert_data)
             session.add(cert)
             
-    # Add some dummy verification logs
-    dummy_logs = [
-        VerificationLog(endpoint_used='api', cert_id_searched='JHK-2024-ME-109', ip_address='10.0.0.8', status_result='success', confidence_score=99.9),
-        VerificationLog(endpoint_used='manual', cert_id_searched='FAKE-ID-999', ip_address='45.22.10.1', status_result='failed', confidence_score=0.0)
-    ]
-    session.add_all(dummy_logs)
-
-    # Add a dummy alert
-    dummy_alert = SecurityAlert(severity='High', cert_id_used='UNKNOWN-123', risk_factor='Invalid issuing authority structure')
-    session.add(dummy_alert)
-
     session.commit()
     print("✅ Database initialized with extended schema and demo data.")
