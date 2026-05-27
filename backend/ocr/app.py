@@ -178,11 +178,53 @@ def get_stats():
 
 @app.route("/api/dashboard/bulk-upload", methods=["POST"])
 def bulk_upload():
-    # Simulated response
     if "file" not in request.files:
         return jsonify({"success": False, "message": "No file part"}), 400
     
-    return jsonify({"success": True, "message": "Records parsed and inserted successfully", "inserted_count": 124}), 200
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"success": False, "message": "No file selected"}), 400
+
+    if not file.filename.endswith('.csv'):
+        return jsonify({"success": False, "message": "Only CSV files are supported for bulk upload"}), 400
+
+    try:
+        df = pd.read_csv(file)
+        # Expected columns
+        required_cols = {'certificate_id', 'name', 'institution'}
+        if not required_cols.issubset(df.columns):
+            return jsonify({"success": False, "message": f"CSV must contain at least: {', '.join(required_cols)}"}), 400
+
+        inserted_count = 0
+        for _, row in df.iterrows():
+            cert_id = str(row.get('certificate_id')).strip()
+            
+            # Skip if already exists
+            if session.query(Certificate).filter_by(certificate_id=cert_id).first():
+                continue
+
+            cert = Certificate(
+                certificate_id=cert_id,
+                name=str(row.get('name')).strip(),
+                roll_number=str(row.get('roll_number', '')).strip(),
+                institution=str(row.get('institution')).strip(),
+                course=str(row.get('course', '')).strip(),
+                year=str(row.get('year', '')).strip(),
+                doc_hash=str(row.get('doc_hash', '')).strip() if pd.notna(row.get('doc_hash')) else None
+            )
+            session.add(cert)
+            inserted_count += 1
+            
+        session.commit()
+        return jsonify({
+            "success": True, 
+            "message": f"Records parsed successfully. Inserted {inserted_count} new certificates.", 
+            "inserted_count": inserted_count
+        }), 200
+
+    except Exception as e:
+        session.rollback()
+        return jsonify({"success": False, "message": f"Failed to process CSV: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

@@ -41,10 +41,22 @@ class SecurityAlert(Base):
     ip_address = Column(String, nullable=True)   # Source IP of the request
     user_agent = Column(String, nullable=True)   # Browser/client user-agent string
 
-# --- Create SQLite engine and table ---
+import os
+
+# --- Create Database Engine ---
+# Use PostgreSQL if DATABASE_URL is set (Production), otherwise fallback to SQLite (Local)
+database_url = os.environ.get("DATABASE_URL", "sqlite:///certificates.db")
+
+# Fix for older Heroku/Render Postgres URIs that use 'postgres://' instead of 'postgresql://'
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+# SQLite needs specific connect_args for multithreading in Flask
+connect_args = {"check_same_thread": False} if database_url.startswith("sqlite") else {}
+
 engine = create_engine(
-    "sqlite:///certificates.db",
-    connect_args={"check_same_thread": False},  # helps with Flask multithreading
+    database_url,
+    connect_args=connect_args,
     echo=False
 )
 Base.metadata.create_all(engine)
