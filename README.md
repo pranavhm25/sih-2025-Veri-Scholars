@@ -74,7 +74,7 @@ flowchart LR
     end
 
     subgraph Data["🗄️ Database"]
-        DB[("SQLite\n(SQLAlchemy scoped_session)")]
+        DB[("PostgreSQL / SQLite\n(SQLAlchemy scoped_session)")]
     end
 
     UI -- "Upload / Manual Entry" --> API
@@ -110,7 +110,7 @@ flowchart LR
 | **Frontend** | HTML5 · CSS3 (Glassmorphism & Gradients) · Vanilla JavaScript · Chart.js |
 | **Backend** | Python · Flask · Flask-CORS · Flask-Limiter · Gunicorn |
 | **AI / ML** | PyTesseract (OCR) · OpenCV (Image Preprocessing) · SentenceTransformers (Entity Matching) |
-| **Database** | SQLite · SQLAlchemy ORM |
+| **Database** | PostgreSQL (Production) · SQLite (Local) · SQLAlchemy ORM |
 | **Security** | SHA-256 Cryptographic Document Hashing · Rate Limiting |
 
 ---
@@ -208,7 +208,7 @@ The API server will start at `http://localhost:5000` and also serve the frontend
 | `POST` | `/api/verify/manual` | Verify a certificate by ID & name | 5/min |
 | `POST` | `/api/verify/upload` | Upload & verify a scanned certificate | 5/min |
 | `GET` | `/api/dashboard/stats` | Get dashboard statistics (records, verifications, trust score) | — |
-| `POST` | `/api/dashboard/bulk-upload` | Bulk upload institutional records | — |
+| `POST` | `/api/dashboard/bulk-upload` | Dynamically parse & ingest a CSV file to the database | — |
 
 <details>
 <summary><strong>📝 Example: Manual Verification</strong></summary>
