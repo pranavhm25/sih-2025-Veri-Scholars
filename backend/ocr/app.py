@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from verifier import CertificateVerifier
+from verifier import CertificateVerifier, HASH_SECRET, CERT_ID_PATTERN, NAME_PATTERN
 from database import session, VerificationLog, SecurityAlert, Certificate
 import pandas as pd
 import os
@@ -12,6 +12,14 @@ import io
 import time
 import threading
 from concurrent.futures import ThreadPoolExecutor
+import jwt
+from functools import wraps
+import datetime
+
+# --- Security Fallback Check ---
+if os.environ.get("DATABASE_URL") and HASH_SECRET == b"veri-scholars-dev-key-change-in-production":
+    raise RuntimeError("SECURITY FATAL: Server started in production with default VERI_HASH_SECRET.")
+
 
 # Serve the frontend directory statically
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'frontend'))
@@ -94,7 +102,46 @@ def process_upload_background(job_id, file_bytes, filename):
         # Cleanup the thread-local session for this background thread
         session.remove()
 
+# --- Auth Middleware ---
+def jwt_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token or not token.startswith("Bearer "):
+            return jsonify({"success": False, "message": "Token is missing or invalid"}), 401
+        
+        token = token.split(" ")[1]
+        try:
+            jwt.decode(token, HASH_SECRET, algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            return jsonify({"success": False, "message": "Token has expired"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"success": False, "message": "Token is invalid"}), 401
+            
+        return f(*args, **kwargs)
+    return decorated
+
 # --- Routes ---
+
+@app.route("/api/auth/login", methods=["POST"])
+@limiter.limit("5 per minute")
+def login():
+    data = request.json
+    if not data:
+        return jsonify({"success": False, "message": "Missing credentials"}), 400
+        
+    email = data.get('email')
+    password = data.get('password')
+    
+    # Mock authentication for prototype
+    if email == 'admin@jtu.ac.in' and password == 'password123':
+        token = jwt.encode({
+            'user': email,
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=12)
+        }, HASH_SECRET, algorithm="HS256")
+        return jsonify({"success": True, "token": token}), 200
+        
+    return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 @app.route("/")
 def index():
@@ -206,6 +253,7 @@ def get_stats():
     }), 200
 
 @app.route("/api/dashboard/bulk-upload", methods=["POST"])
+@jwt_required
 def bulk_upload():
     if "file" not in request.files:
         return jsonify({"success": False, "message": "No file part"}), 400
@@ -226,7 +274,23 @@ def bulk_upload():
 
         inserted_count = 0
         for _, row in df.iterrows():
-            cert_id = str(row.get('certificate_id')).strip()
+            raw_cert_id = row.get('certificate_id')
+            if pd.isna(raw_cert_id):
+                continue
+            cert_id = str(raw_cert_id).strip()
+            
+            # Regex validation for ID
+            if not CERT_ID_PATTERN.match(cert_id):
+                continue
+                
+            raw_name = row.get('name')
+            if pd.isna(raw_name):
+                continue
+            name = str(raw_name).strip()
+            
+            # Regex validation for Name
+            if not NAME_PATTERN.match(name):
+                continue
             
             # Skip if already exists
             if session.query(Certificate).filter_by(certificate_id=cert_id).first():
@@ -234,7 +298,7 @@ def bulk_upload():
 
             cert = Certificate(
                 certificate_id=cert_id,
-                name=str(row.get('name')).strip(),
+                name=name,
                 roll_number=str(row.get('roll_number', '')).strip(),
                 institution=str(row.get('institution')).strip(),
                 course=str(row.get('course', '')).strip(),

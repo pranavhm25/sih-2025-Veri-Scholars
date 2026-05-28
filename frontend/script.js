@@ -389,18 +389,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('signinBtn');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
         btn.textContent = "Authenticating...";
         
-        setTimeout(() => {
-            authState = true;
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+                authState = true;
+                localStorage.setItem('adminToken', data.token);
+                btn.textContent = "Sign In";
+                checkAuth();
+                showPage('dashboard');
+                showToast("Welcome Back", "Signed in as Institute Admin", "success");
+            } else {
+                btn.textContent = "Sign In";
+                showToast("Login Failed", data.message || "Invalid credentials", "error");
+            }
+        } catch (err) {
             btn.textContent = "Sign In";
-            checkAuth();
-            showPage('dashboard');
-            showToast("Welcome Back", "Signed in as Institute Admin", "success");
-        }, 1000);
+            console.error("Login Error:", err);
+            showToast("Connection Error", "Could not reach the server.", "error");
+        }
     });
 
     document.getElementById('demoLoginBtn').addEventListener('click', () => {
@@ -411,6 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
         authState = false;
+        localStorage.removeItem('adminToken');
         document.getElementById('auth-controls').innerHTML = `<button class="btn btn-secondary" data-target="#loginPage">Institution Login</button>`;
         document.getElementById('auth-controls').querySelector('.btn').addEventListener('click', () => showPage('loginPage'));
         showPage('home');
@@ -595,8 +616,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const formData = new FormData();
                 formData.append('file', file);
                 
+                const token = localStorage.getItem('adminToken');
                 const res = await fetch(`${API_BASE}/dashboard/bulk-upload`, {
                     method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
                 
