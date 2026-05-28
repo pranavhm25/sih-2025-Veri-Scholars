@@ -74,7 +74,7 @@ predefined_certificates = [
         "institution": "Birla Institute of Technology, Mesra",
         "course": "B.Tech Computer Science",
         "year": "2025",
-        "doc_hash": "404652123b8ea8e69c398480bd68f0dcbc10471e0189c47a22eacf78f49bf3c3"
+        "doc_hash": "c55469d41f0b3b1675f0b669e8dac2aa12c52baf26cae56bb963e8a4fcd23594"
     },
     {
         "certificate_id": "JHK-2024-ME-109",
@@ -83,7 +83,7 @@ predefined_certificates = [
         "institution": "NIT Jamshedpur",
         "course": "B.Tech Mechanical Engineering",
         "year": "2024",
-        "doc_hash": "6f423f8b43d56380ab0087fb9774eb31a1aac3daf3c76a93b90ccb058f0310d3"
+        "doc_hash": "d9f73f855a81bd78e0ef8e982d41c0b677adfcf328222fad9739e7fb0495d3c9"
     },
     {
         "certificate_id": "JHK-2025-EE-201",
@@ -92,7 +92,7 @@ predefined_certificates = [
         "institution": "IIT (ISM) Dhanbad",
         "course": "B.Tech Electrical Engineering",
         "year": "2025",
-        "doc_hash": "03bbc486f2a436ad0c86218a65a9e68ac884a249bd243bc05316e6a74d6aaeca"
+        "doc_hash": "d924f44d51238c8b87ca3f1180d8a1c8708444526629678df9a68913cc51ee13"
     },
     {
         "certificate_id": "JHK-2023-EC-304",
@@ -101,7 +101,7 @@ predefined_certificates = [
         "institution": "Ranchi University",
         "course": "B.Sc Electronics",
         "year": "2023",
-        "doc_hash": "7a70da085155ce3d414b670bfae0a783c410e6b4af84b6234a7fbb1b7efa068e"
+        "doc_hash": "26e2dd2930451d556301dcf74019e7f9d4f11ac6888cae6d9c62eb48e37a6a2e"
     }
 ]
 
