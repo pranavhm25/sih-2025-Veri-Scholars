@@ -4,12 +4,13 @@ FROM python:3.11-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies, including Tesseract OCR.
+# Replaced the obsolete legacy package libgl1-mesa-glx with libgl1 (modern Debian Bookworm OpenGL library).
 # Uses a POSIX shell compliant retry loop to handle transient builder network failures.
 RUN apt-get clean && \
     for i in 1 2 3; do apt-get update && break || sleep 5; done && \
     apt-get install -y --no-install-recommends \
     tesseract-ocr \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
