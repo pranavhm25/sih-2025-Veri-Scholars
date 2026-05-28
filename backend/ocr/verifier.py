@@ -48,9 +48,6 @@ class CertificateVerifier:
 
     def _get_client_ip(self):
         try:
-            # Support reverse-proxy setups (e.g. behind Nginx/Gunicorn)
-            if request.headers.get("X-Forwarded-For"):
-                return request.headers["X-Forwarded-For"].split(",")[0].strip()
             return request.remote_addr
         except:
             return "127.0.0.1"
@@ -90,7 +87,7 @@ class CertificateVerifier:
     def _check_brute_force(self, ip):
         """Detect repeated failed verifications from the same IP within a time window."""
         import datetime
-        cutoff = datetime.datetime.utcnow() - datetime.timedelta(minutes=self.BRUTE_FORCE_WINDOW_MINUTES)
+        cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=self.BRUTE_FORCE_WINDOW_MINUTES)
         recent_failures = (
             self.session.query(VerificationLog)
             .filter(

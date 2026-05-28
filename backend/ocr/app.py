@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -16,6 +16,9 @@ from concurrent.futures import ThreadPoolExecutor
 # Serve the frontend directory statically
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'frontend'))
 app = Flask(__name__, static_folder=frontend_dir, static_url_path='/')
+
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 CORS(app)
 
@@ -56,6 +59,9 @@ class DummyFileStorage:
     def __init__(self, stream, filename):
         self.stream = stream
         self.filename = filename
+        
+    def read(self, *args, **kwargs):
+        return self.stream.read(*args, **kwargs)
 
 def process_upload_background(job_id, file_bytes, filename):
     try:

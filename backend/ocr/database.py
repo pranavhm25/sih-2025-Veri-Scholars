@@ -1,5 +1,5 @@
 # database.py
-from sqlalchemy import Column, Integer, String, create_engine, DateTime, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, create_engine, DateTime, Float
 from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session
 import datetime
 
@@ -17,13 +17,13 @@ class Certificate(Base):
     course = Column(String, nullable=True)
     year = Column(String, nullable=True)
     doc_hash = Column(String, nullable=True) # SHA-256 hash of the valid doc
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
 class VerificationLog(Base):
     __tablename__ = 'verification_logs'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    timestamp = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     endpoint_used = Column(String, nullable=False) # 'manual' or 'upload' or 'api'
     cert_id_searched = Column(String, nullable=False)
     ip_address = Column(String, nullable=True)
@@ -34,7 +34,7 @@ class SecurityAlert(Base):
     __tablename__ = 'security_alerts'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    timestamp = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     severity = Column(String, nullable=False) # 'High', 'Medium', 'Low'
     cert_id_used = Column(String, nullable=True)
     risk_factor = Column(String, nullable=False) # e.g. "Hash Tampering"

@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- State Elements ---
+    // --- API & State Elements ---
+    const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://127.0.0.1:5000/api"
+        : "/api";
+        
     const pages = document.querySelectorAll('.page-section');
     const navLinks = document.querySelectorAll('.nav-link, [data-target]');
     const themeToggle = document.getElementById('theme-toggle');
@@ -185,10 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- API & Demo Verification Logic ---
-    const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-        ? "http://127.0.0.1:5000/api"
-        : "/api";
+    // --- Demo Verification Logic ---
     
     // Fallback Mock Data
     const SUCCESS_MOCK_DATA = {
@@ -251,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const normalizedId = certId.trim().toUpperCase();
         console.log("Using Fallback Demo mode");
         setTimeout(() => {
-            if (normalizedId === SUCCESS_MOCK_DATA.id || normalizedId === 'SUCCESS') {
+            if (normalizedId === SUCCESS_MOCK_DATA.certificate_id || normalizedId === 'SUCCESS') {
                 renderResult(SUCCESS_MOCK_DATA, true);
             } else {
                 renderResult({ extracted_data: { certificate_id: certId, name: name }, anomaly_reasons: ["Certificate ID not found in institutional database. (Demo)"] }, false);
