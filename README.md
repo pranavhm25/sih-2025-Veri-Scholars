@@ -124,24 +124,21 @@ sih-2025-Veri-Scholars/
 │   ├── index.html               # Main SPA entry point
 │   ├── style.css                # Global styles (glassmorphism, gradients)
 │   ├── script.js                # Client-side logic, navigation & demo mode
-│   ├── preview.png              # Project preview screenshot
-│   └── flutter.dart             # Flutter prototype reference
+│   └── preview.png              # Project preview screenshot
 │
 ├── backend/
-│   ├── ocr/                     # Flask REST API + AI verification engine
-│   │   ├── app.py               # Flask server & route definitions
-│   │   ├── OCRProcessor.py      # Tesseract OCR + OpenCV pipeline
-│   │   ├── verifier.py          # Certificate verification logic
-│   │   ├── database.py          # SQLAlchemy models & DB setup
-│   │   ├── wsgi.py              # Gunicorn WSGI entry point
-│   │   ├── requirements.txt     # Python dependencies
-│   │   ├── certificates.db      # SQLite database
-│   │   ├── static/              # Backend-specific static assets
-│   │   └── templates/           # Jinja2 templates
-│   └── hash/
-│       └── certificates.db      # Hash verification database
+│   └── ocr/                     # Flask REST API + AI verification engine
+│       ├── app.py               # Flask server & route definitions
+│       ├── OCRProcessor.py      # Tesseract OCR + OpenCV pipeline
+│       ├── verifier.py          # Certificate verification logic
+│       ├── database.py          # SQLAlchemy models & DB setup
+│       ├── wsgi.py              # Gunicorn WSGI entry point
+│       └── requirements.txt     # Python dependencies
 │
-├── flutter.dart                 # Flutter app reference
+├── mobile/
+│   └── flutter.dart             # Flutter mobile app prototype
+│
+├── .env.example                 # Environment variable documentation
 ├── .gitignore
 ├── LICENSE                      # MIT License
 └── README.md
