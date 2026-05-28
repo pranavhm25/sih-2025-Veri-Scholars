@@ -9,6 +9,8 @@ import pandas as pd
 import os
 import uuid
 import io
+import time
+import threading
 from concurrent.futures import ThreadPoolExecutor
 
 # Serve the frontend directory statically
@@ -34,6 +36,21 @@ def shutdown_session(exception=None):
 # --- Async Task Queue Setup ---
 executor = ThreadPoolExecutor(max_workers=4)
 jobs = {}
+jobs_lock = threading.Lock()
+JOB_TTL_SECONDS = 3600  # 1 hour
+
+def _sweep_stale_jobs():
+    """Background daemon that removes jobs older than JOB_TTL_SECONDS every 5 minutes."""
+    while True:
+        time.sleep(300)  # Run every 5 minutes
+        cutoff = time.time() - JOB_TTL_SECONDS
+        with jobs_lock:
+            stale_ids = [jid for jid, jdata in jobs.items() if jdata.get("created_at", 0) < cutoff]
+            for jid in stale_ids:
+                del jobs[jid]
+
+_sweeper_thread = threading.Thread(target=_sweep_stale_jobs, daemon=True)
+_sweeper_thread.start()
 
 class DummyFileStorage:
     def __init__(self, stream, filename):
@@ -44,25 +61,29 @@ def process_upload_background(job_id, file_bytes, filename):
     try:
         dummy_file = DummyFileStorage(io.BytesIO(file_bytes), filename)
         success, message, anomaly_reasons, extracted_data = verifier.verify_file(dummy_file)
-        jobs[job_id] = {
-            "status": "completed",
-            "result": {
-                "success": success,
-                "message": message,
-                "anomaly_reasons": anomaly_reasons,
-                "extracted_data": extracted_data
+        with jobs_lock:
+            jobs[job_id] = {
+                "status": "completed",
+                "created_at": time.time(),
+                "result": {
+                    "success": success,
+                    "message": message,
+                    "anomaly_reasons": anomaly_reasons,
+                    "extracted_data": extracted_data
+                }
             }
-        }
     except Exception as e:
-        jobs[job_id] = {
-            "status": "failed",
-            "result": {
-                "success": False,
-                "message": f"Server Error: {str(e)}",
-                "anomaly_reasons": [],
-                "extracted_data": {}
+        with jobs_lock:
+            jobs[job_id] = {
+                "status": "failed",
+                "created_at": time.time(),
+                "result": {
+                    "success": False,
+                    "message": f"Server Error: {str(e)}",
+                    "anomaly_reasons": [],
+                    "extracted_data": {}
+                }
             }
-        }
     finally:
         # Cleanup the thread-local session for this background thread
         session.remove()
@@ -123,7 +144,8 @@ def upload():
         filename = file.filename
         
         job_id = str(uuid.uuid4())
-        jobs[job_id] = {"status": "processing"}
+        with jobs_lock:
+            jobs[job_id] = {"status": "processing", "created_at": time.time()}
         
         # Submit to background worker
         executor.submit(process_upload_background, job_id, file_bytes, filename)
@@ -142,15 +164,16 @@ def upload():
 
 @app.route("/api/verify/status/<job_id>", methods=["GET"])
 def get_job_status(job_id):
-    job = jobs.get(job_id)
-    if not job:
-        return jsonify({"success": False, "message": "Job not found"}), 404
+    with jobs_lock:
+        job = jobs.get(job_id)
+        if not job:
+            return jsonify({"success": False, "message": "Job not found"}), 404
         
-    if job["status"] == "processing":
-        return jsonify({"status": "processing"}), 200
+        if job["status"] == "processing":
+            return jsonify({"status": "processing"}), 200
         
-    # Once retrieved, we can delete the job to save memory, or keep it. We'll delete it.
-    result = jobs.pop(job_id)
+        # Once retrieved, delete the job to free memory.
+        result = jobs.pop(job_id)
     return jsonify({"status": result["status"], "result": result["result"]}), 200
 
 @app.route("/api/dashboard/stats", methods=["GET"])

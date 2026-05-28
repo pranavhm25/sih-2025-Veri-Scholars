@@ -126,10 +126,23 @@ document.addEventListener('DOMContentLoaded', () => {
         window.requestAnimationFrame(step);
     };
 
-    const animateCounters = () => {
-        animateValue("count-verified", 0, 12453, 2000, (v) => v.toLocaleString());
-        animateValue("count-institutions", 0, 42, 1500, (v) => v);
-        animateValue("count-accuracy", 0, 99, 2000, (v) => v + "%");
+    const animateCounters = async () => {
+        // Attempt to fetch live stats from API, fall back to demo values
+        let verified = 12453, institutions = 42, accuracy = 99;
+        try {
+            const res = await fetch(`${API_BASE}/dashboard/stats`);
+            if (res.ok) {
+                const data = await res.json();
+                verified = data.total_verifications || verified;
+                institutions = data.records_issued || institutions;
+                accuracy = data.trust_score ? Math.round(data.trust_score) : accuracy;
+            }
+        } catch (e) {
+            // API offline — use demo fallback values
+        }
+        animateValue("count-verified", 0, verified, 2000, (v) => v.toLocaleString());
+        animateValue("count-institutions", 0, institutions, 1500, (v) => v);
+        animateValue("count-accuracy", 0, accuracy, 2000, (v) => v + "%");
     };
 
     // --- Toast Notifications ---
@@ -517,13 +530,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Run feed tick every 3 to 8 seconds if dashboard is visible
-    setInterval(() => {
+    // Run feed tick every 3 to 8 seconds (truly random) if dashboard is visible
+    const triggerNextFeedEvent = () => {
         const overviewDash = document.getElementById('dash-overview');
         if (overviewDash && overviewDash.style.display !== 'none') {
             generateFeedEvent();
         }
-    }, Math.random() * 5000 + 3000);
+        setTimeout(triggerNextFeedEvent, Math.random() * 5000 + 3000);
+    };
+    setTimeout(triggerNextFeedEvent, 3000);
 
     // 2. Initialize Simulated Blockchain Ledger
     const initLedger = () => {

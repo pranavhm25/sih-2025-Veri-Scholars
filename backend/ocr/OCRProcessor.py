@@ -2,11 +2,9 @@ import numpy as np
 import cv2
 import pytesseract
 import re
-from sentence_transformers import SentenceTransformer, util
+import difflib
 
 class OCRProcessor:
-    # Load embedding model once (shared across instances)
-    model = SentenceTransformer('all-MiniLM-L6-v2')
     known_institutions = [
         # Premier Institutes
         "Birla Institute of Technology, Mesra",
@@ -130,13 +128,17 @@ class OCRProcessor:
             # Clean text
             institution = re.sub(r'[^A-Za-z\s]', ' ', institution)
             institution = re.sub(r'\s+', ' ', institution).strip()
-            # Semantic matching with known institutions
-            emb_text = self.model.encode(institution, convert_to_tensor=True)
-            emb_known = self.model.encode(self.known_institutions, convert_to_tensor=True)
-            cos_scores = util.cos_sim(emb_text, emb_known)[0]
-            best_idx = cos_scores.argmax()
-            if cos_scores[best_idx] > 0.25:  # threshold
-                institution = self.known_institutions[best_idx]
+            # Fuzzy matching against known institutions using difflib
+            best_match = None
+            best_ratio = 0.0
+            inst_lower = institution.lower()
+            for known in self.known_institutions:
+                ratio = difflib.SequenceMatcher(None, inst_lower, known.lower()).ratio()
+                if ratio > best_ratio:
+                    best_ratio = ratio
+                    best_match = known
+            if best_ratio >= 0.45:  # threshold for fuzzy institution matching
+                institution = best_match
             else:
                 # capitalize words nicely
                 institution = institution.title()
