@@ -65,40 +65,66 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = scoped_session(Session)
 
-# --- Initialize database only when run directly ---
+# --- Auto-seed Database with Predefined Demo Certificates ---
+predefined_certificates = [
+    {
+        "certificate_id": "JHK-2025-CS-042",
+        "name": "Aditi Sharma",
+        "roll_number": "2021CS042",
+        "institution": "Birla Institute of Technology, Mesra",
+        "course": "B.Tech Computer Science",
+        "year": "2025",
+        "doc_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+        "certificate_id": "JHK-2024-ME-109",
+        "name": "Rohan Das",
+        "roll_number": "2020ME109",
+        "institution": "NIT Jamshedpur",
+        "course": "B.Tech Mechanical Engineering",
+        "year": "2024",
+        "doc_hash": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"
+    },
+    {
+        "certificate_id": "JHK-2025-EE-201",
+        "name": "Priya Patel",
+        "roll_number": "2021EE201",
+        "institution": "IIT (ISM) Dhanbad",
+        "course": "B.Tech Electrical Engineering",
+        "year": "2025",
+        "doc_hash": "b2f0a1d48bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f928e"
+    },
+    {
+        "certificate_id": "JHK-2023-EC-304",
+        "name": "Vikram Singh",
+        "roll_number": "2019EC304",
+        "institution": "Ranchi University",
+        "course": "B.Sc Electronics",
+        "year": "2023",
+        "doc_hash": "c1f2a3d48bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f993d"
+    }
+]
+
+# Ensure we auto-seed if there are no certificates in the DB
+try:
+    if session.query(Certificate).count() == 0:
+        for cert_data in predefined_certificates:
+            cert = Certificate(**cert_data)
+            session.add(cert)
+        session.commit()
+        print("✅ Database successfully seeded with demo certificates.")
+except Exception as e:
+    session.rollback()
+    print("⚠️ Database seeding skipped or failed:", e)
+
+# Keep the main run block for manual script resets if needed
 if __name__ == "__main__":
-    # Clear old data
     session.query(Certificate).delete()
     session.query(VerificationLog).delete()
     session.query(SecurityAlert).delete()
     session.commit()
-
-    # Preload database with the required Gold standard demo certificate
-    predefined_certificates = [
-        {
-            "certificate_id": "JHK-2025-CS-042",
-            "name": "Aditi Sharma",
-            "roll_number": "2021CS042",
-            "institution": "Birla Institute of Technology, Mesra",
-            "course": "B.Tech Computer Science",
-            "year": "2025",
-            "doc_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" # Example hash
-        },
-        {
-            "certificate_id": "JHK-2024-ME-109",
-            "name": "Rohan Das",
-            "roll_number": "2020ME109",
-            "institution": "NIT Jamshedpur",
-            "course": "B.Tech Mechanical Engineering",
-            "year": "2024",
-            "doc_hash": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"
-        }
-    ]
-
     for cert_data in predefined_certificates:
-        if not session.query(Certificate).filter_by(certificate_id=cert_data["certificate_id"]).first():
-            cert = Certificate(**cert_data)
-            session.add(cert)
-            
+        cert = Certificate(**cert_data)
+        session.add(cert)
     session.commit()
-    print("✅ Database initialized with extended schema and demo data.")
+    print("✅ Database explicitly reset and seeded.")

@@ -193,12 +193,38 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fallback Mock Data
     const SUCCESS_MOCK_DATA = {
-        certificate_id: "JHK-2025-CS-042",
-        name: "Aditi Sharma",
-        institution: "Birla Institute of Technology, Mesra",
-        course: "B.Tech Computer Science",
-        year: "2025",
-        doc_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "JHK-2025-CS-042": {
+            certificate_id: "JHK-2025-CS-042",
+            name: "Aditi Sharma",
+            institution: "Birla Institute of Technology, Mesra",
+            course: "B.Tech Computer Science",
+            year: "2025",
+            doc_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "JHK-2024-ME-109": {
+            certificate_id: "JHK-2024-ME-109",
+            name: "Rohan Das",
+            institution: "NIT Jamshedpur",
+            course: "B.Tech Mechanical Engineering",
+            year: "2024",
+            doc_hash: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"
+        },
+        "JHK-2025-EE-201": {
+            certificate_id: "JHK-2025-EE-201",
+            name: "Priya Patel",
+            institution: "IIT (ISM) Dhanbad",
+            course: "B.Tech Electrical Engineering",
+            year: "2025",
+            doc_hash: "b2f0a1d48bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f928e"
+        },
+        "JHK-2023-EC-304": {
+            certificate_id: "JHK-2023-EC-304",
+            name: "Vikram Singh",
+            institution: "Ranchi University",
+            course: "B.Sc Electronics",
+            year: "2023",
+            doc_hash: "c1f2a3d48bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f993d"
+        }
     };
 
     const renderResult = (data, isSuccess) => {
@@ -252,8 +278,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const normalizedId = certId.trim().toUpperCase();
         console.log("Using Fallback Demo mode");
         setTimeout(() => {
-            if (normalizedId === SUCCESS_MOCK_DATA.certificate_id || normalizedId === 'SUCCESS') {
-                renderResult(SUCCESS_MOCK_DATA, true);
+            if (SUCCESS_MOCK_DATA[normalizedId]) {
+                renderResult(SUCCESS_MOCK_DATA[normalizedId], true);
+            } else if (normalizedId === 'SUCCESS') {
+                renderResult(SUCCESS_MOCK_DATA["JHK-2025-CS-042"], true);
             } else {
                 renderResult({ extracted_data: { certificate_id: certId, name: name }, anomaly_reasons: ["Certificate ID not found in institutional database. (Demo)"] }, false);
             }
