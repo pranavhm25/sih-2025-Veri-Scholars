@@ -4,9 +4,9 @@ FROM python:3.11-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies, including Tesseract OCR.
-# Uses a retry loop to handle transient Render builder network failures (Exit 100).
+# Uses a POSIX shell compliant retry loop to handle transient builder network failures.
 RUN apt-get clean && \
-    for i in {1..3}; do apt-get update && break || sleep 5; done && \
+    for i in 1 2 3; do apt-get update && break || sleep 5; done && \
     apt-get install -y --no-install-recommends \
     tesseract-ocr \
     libgl1-mesa-glx \
