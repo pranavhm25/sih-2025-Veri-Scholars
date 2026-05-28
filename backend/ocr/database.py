@@ -74,7 +74,7 @@ predefined_certificates = [
         "institution": "Birla Institute of Technology, Mesra",
         "course": "B.Tech Computer Science",
         "year": "2025",
-        "doc_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "doc_hash": "404652123b8ea8e69c398480bd68f0dcbc10471e0189c47a22eacf78f49bf3c3"
     },
     {
         "certificate_id": "JHK-2024-ME-109",
@@ -83,7 +83,7 @@ predefined_certificates = [
         "institution": "NIT Jamshedpur",
         "course": "B.Tech Mechanical Engineering",
         "year": "2024",
-        "doc_hash": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"
+        "doc_hash": "6f423f8b43d56380ab0087fb9774eb31a1aac3daf3c76a93b90ccb058f0310d3"
     },
     {
         "certificate_id": "JHK-2025-EE-201",
@@ -92,7 +92,7 @@ predefined_certificates = [
         "institution": "IIT (ISM) Dhanbad",
         "course": "B.Tech Electrical Engineering",
         "year": "2025",
-        "doc_hash": "b2f0a1d48bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f928e"
+        "doc_hash": "03bbc486f2a436ad0c86218a65a9e68ac884a249bd243bc05316e6a74d6aaeca"
     },
     {
         "certificate_id": "JHK-2023-EC-304",
@@ -101,18 +101,23 @@ predefined_certificates = [
         "institution": "Ranchi University",
         "course": "B.Sc Electronics",
         "year": "2023",
-        "doc_hash": "c1f2a3d48bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f993d"
+        "doc_hash": "7a70da085155ce3d414b670bfae0a783c410e6b4af84b6234a7fbb1b7efa068e"
     }
 ]
 
-# Ensure we auto-seed if there are no certificates in the DB
+# Ensure we auto-seed or update hashes of predefined certificates
 try:
-    if session.query(Certificate).count() == 0:
-        for cert_data in predefined_certificates:
+    for cert_data in predefined_certificates:
+        existing = session.query(Certificate).filter_by(certificate_id=cert_data["certificate_id"]).first()
+        if existing:
+            # Synchronize doc_hash and other details to match latest compiled demo files
+            if existing.doc_hash != cert_data["doc_hash"]:
+                existing.doc_hash = cert_data["doc_hash"]
+        else:
             cert = Certificate(**cert_data)
             session.add(cert)
-        session.commit()
-        print("✅ Database successfully seeded with demo certificates.")
+    session.commit()
+    print("✅ Database successfully seeded and synchronized with demo certificates.")
 except Exception as e:
     session.rollback()
     print("⚠️ Database seeding skipped or failed:", e)
