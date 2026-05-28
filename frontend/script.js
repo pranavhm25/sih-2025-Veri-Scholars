@@ -173,7 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- API & Demo Verification Logic ---
-    const API_BASE = window.location.origin === "file://" ? "http://127.0.0.1:5000/api" : "/api";
+    const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://127.0.0.1:5000/api"
+        : "/api";
     
     // Fallback Mock Data
     const SUCCESS_MOCK_DATA = {
@@ -357,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('mockQrBtn').addEventListener('click', () => {
         showToast("Scanning...", "Analyzing QR Code structural data", "info");
         setTimeout(() => {
-            executeVerification('SUCCESS', '');
+            executeManualVerification('SUCCESS', '');
         }, 1500);
     });
 

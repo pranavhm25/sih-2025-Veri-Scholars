@@ -151,12 +151,8 @@ class CertificateVerifier:
         # Clean names slightly for comparison (lowercase and strip extra whitespaces)
         clean_a = " ".join(name_a.lower().split())
         clean_b = " ".join(name_b.lower().split())
-        
-        # Exact substring match
-        if clean_a in clean_b or clean_b in clean_a:
-            return True
-            
-        # Fuzzy match
+
+        # Fuzzy match using SequenceMatcher ratio
         ratio = difflib.SequenceMatcher(None, clean_a, clean_b).ratio()
         return ratio >= threshold
 
